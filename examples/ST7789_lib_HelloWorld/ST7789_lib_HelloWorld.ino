@@ -45,23 +45,30 @@ ST7789 240x320 2.0" IPS - only 4+2 wires required:
 #include "ST7789_AVR.h"
 #include <Adafruit_GFX.h>
 
+#define TFT_MOSI   23  //GREEN data out
+#define TFT_CLK    18  // ORANGE
+#define TFT_DC     19   // BLUE     pass blinky
+#define TFT_CS     13   // YELLOW   pass blinky
+#define TFT_RST    5    // BROWN    pass blinky
 
-#define TFT_DC     12   // pass blinky
-#define TFT_CS     13   // pass blinky
-#define TFT_RST    5    // pass blinky
 
+#define BLINKY_TEST
 #ifdef BLINKY_TEST
 #define BLINK_BLUE_LED 2
-#define BLINK_ONE_LED TFT_DC
-#define BLINK_TWO_LED TFT_CS
-#define BLINK_RST_LED TFT_RST
+#define BLINK_ONE_LED TFT_DC    //BLUE
+#define BLINK_TWO_LED TFT_CS    //YELLOW
+#define BLINK_RST_LED TFT_RST   //BROWN
+#define BLINK_CLK_LED TFT_CLK   // ORANGE normally spi provided
+#define BLINK_OUT_LED TFT_MOSI
 
 void setup() {
-  // initialize digital pin LED_BUILTIN as an output.
-  pinMode(BLINK_BLUE_LED, OUTPUT);
-  pinMode(BLINK_ONE_LED, OUTPUT);
-  pinMode(BLINK_TWO_LED, OUTPUT);
-  pinMode(BLINK_RST_LED, OUTPUT);
+    // initialize digital pin LED_BUILTIN as an output.
+    pinMode(BLINK_BLUE_LED, OUTPUT);
+    pinMode(BLINK_ONE_LED, OUTPUT);
+    pinMode(BLINK_TWO_LED, OUTPUT);
+    pinMode(BLINK_RST_LED, OUTPUT);
+    pinMode(BLINK_CLK_LED, OUTPUT);
+    pinMode(BLINK_OUT_LED, OUTPUT);
 
 }
 
@@ -71,11 +78,15 @@ void loop() {
   digitalWrite(BLINK_ONE_LED, HIGH);   // turn the LED on (HIGH is the voltage level)
   digitalWrite(BLINK_TWO_LED, HIGH);   // turn the LED on (HIGH is the voltage level)
   digitalWrite(BLINK_RST_LED, HIGH);   // turn the LED on (HIGH is the voltage level)
+  digitalWrite(BLINK_CLK_LED, HIGH);   // turn the LED on (HIGH is the voltage level)
+  digitalWrite(BLINK_OUT_LED, HIGH);   // turn the LED on (HIGH is the voltage level)
   delay(1000);                       // wait for a second
   digitalWrite(BLINK_BLUE_LED, LOW);    // turn the LED off by making the voltage LOW
   digitalWrite(BLINK_ONE_LED, LOW);    // turn the LED off by making the voltage LOW
   digitalWrite(BLINK_TWO_LED, LOW);    // turn the LED off by making the voltage LOW
   digitalWrite(BLINK_RST_LED, LOW);    // turn the LED off by making the voltage LOW
+  digitalWrite(BLINK_CLK_LED, LOW);    // turn the LED off by making the voltage LOW
+  digitalWrite(BLINK_OUT_LED, LOW);    // turn the LED off by making the voltage LOW
   delay(1000);                       // wait for a second
 }
 
