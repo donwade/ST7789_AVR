@@ -7,10 +7,10 @@
 // ------------------------------
 // remove "define COMPATIBILITY_MODE" for best performance on 16MHz AVR Arduinos
 // if defined - the library should work on all Arduino compatible boards
-//#define COMPATIBILITY_MODE
+#define COMPATIBILITY_MODE
 
 // define for LCD boards where CS pin is internally connected to the ground
-#define CS_ALWAYS_LOW
+//#define CS_ALWAYS_LOW
 // ------------------------------
 
 #include "Arduino.h"
@@ -23,8 +23,8 @@
 
 // Color definitions
 
-#define RGBto565(r,g,b) ((((r) & 0xF8) << 8) | (((g) & 0xFC) << 3) | ((b) >> 3)) 
-#define RGBIto565(r,g,b,i) ((((((r)*(i))/255) & 0xF8) << 8) | ((((g)*(i)/255) & 0xFC) << 3) | ((((b)*(i)/255) & 0xFC) >> 3)) 
+#define RGBto565(r,g,b) ((((r) & 0xF8) << 8) | (((g) & 0xFC) << 3) | ((b) >> 3))
+#define RGBIto565(r,g,b,i) ((((((r)*(i))/255) & 0xF8) << 8) | ((((g)*(i)/255) & 0xFC) << 3) | ((((b)*(i)/255) & 0xFC) >> 3))
 
 #define	BLACK   0x0000
 #define	BLUE    0x001F
@@ -61,7 +61,7 @@ class ST7789_AVR : public Adafruit_GFX {
   void fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color);
   void drawImage(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t *img);
   void drawImageF(int16_t x, int16_t y, int16_t w, int16_t h, const uint16_t *img16);
-  void drawImageF(int16_t x, int16_t y, const uint16_t *img16) { drawImageF(x,y,pgm_read_word(img16),pgm_read_word(img16+1),img16+3); } 
+  void drawImageF(int16_t x, int16_t y, const uint16_t *img16) { drawImageF(x,y,pgm_read_word(img16),pgm_read_word(img16+1),img16+3); }
   void setRotation(uint8_t r);
   void invertDisplay(boolean mode);
   void partialDisplay(boolean mode);
@@ -76,14 +76,14 @@ class ST7789_AVR : public Adafruit_GFX {
   void powerSave(uint8_t mode);
 
   uint16_t Color565(uint8_t r, uint8_t g, uint8_t b);
-  uint16_t color565(uint8_t r, uint8_t g, uint8_t b) { return Color565(r, g, b); } 
+  uint16_t color565(uint8_t r, uint8_t g, uint8_t b) { return Color565(r, g, b); }
   void rgbWheel(int idx, uint8_t *_r, uint8_t *_g, uint8_t *_b);
   uint16_t rgbWheel(int idx);
 
  protected:
   uint8_t xstart, ystart, xend, yend, xoffs, yoffs;
   uint16_t _widthIni, _heightIni;
- 
+
   void displayInit(const uint8_t *addr);
   void writeSPI(uint8_t);
   void writeMulti(uint16_t color, uint16_t num);

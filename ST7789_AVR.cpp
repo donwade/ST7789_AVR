@@ -67,7 +67,7 @@ Changes:
 
 // Initialization commands for ST7789 240x240 1.3" IPS
 // taken from Adafruit
-static const uint8_t PROGMEM init_240x240[] = {
+static const uint8_t init_240x240[] = {
     9,                       				// 9 commands in list:
     ST7789_SWRESET,   ST_CMD_DELAY,  		// 1: Software reset, no args, w/delay
       150,                     				// 150 ms delay
@@ -127,7 +127,7 @@ static SPISettings spiSettings;
 // speed test results:
 // in AVR best performance mode -> about 6.9 Mbps
 // in compatibility mode (SPI.transfer(c)) -> about 4 Mbps
-inline void ST7789_AVR::writeSPI(uint8_t c) 
+inline void ST7789_AVR::writeSPI(uint8_t c)
 {
 #ifdef COMPATIBILITY_MODE
     SPI.transfer(c);
@@ -185,7 +185,7 @@ inline void ST7789_AVR::writeMulti(uint16_t color, uint16_t num)
     : [spdr] "I" (_SFR_IO_ADDR(SPDR)), [lo] "r" ((uint8_t)color), [hi] "r" ((uint8_t)(color>>8))
   );
 #endif
-} 
+}
 // ----------------------------------------------------------
 // fast method to send multiple 16-bit values from RAM via SPI
 inline void ST7789_AVR::copyMulti(uint8_t *img, uint16_t num)
@@ -221,9 +221,9 @@ inline void ST7789_AVR::copyMulti(uint8_t *img, uint16_t num)
     : [spdr] "I" (_SFR_IO_ADDR(SPDR)), [img] "e" (img), [lo] "r" (lo), [hi] "r" (hi)
   );
 #endif
-} 
+}
 // ----------------------------------------------------------
-void ST7789_AVR::writeCmd(uint8_t c) 
+void ST7789_AVR::writeCmd(uint8_t c)
 {
   DC_COMMAND;
   CS_ACTIVE;
@@ -236,12 +236,12 @@ void ST7789_AVR::writeCmd(uint8_t c)
 }
 
 // ----------------------------------------------------------
-void ST7789_AVR::writeData(uint8_t d8) 
+void ST7789_AVR::writeData(uint8_t d8)
 {
   DC_DATA;
   CS_ACTIVE;
   SPI_START;
-    
+
   writeSPI(d8);
 
   CS_IDLE;
@@ -249,12 +249,12 @@ void ST7789_AVR::writeData(uint8_t d8)
 }
 
 // ----------------------------------------------------------
-void ST7789_AVR::writeData16(uint16_t d16) 
+void ST7789_AVR::writeData16(uint16_t d16)
 {
   DC_DATA;
   CS_ACTIVE;
   SPI_START;
-    
+
   writeMulti(d16,1);
 
   CS_IDLE;
@@ -262,7 +262,7 @@ void ST7789_AVR::writeData16(uint16_t d16)
 }
 
 // ----------------------------------------------------------
-ST7789_AVR::ST7789_AVR(int8_t dc, int8_t rst, int8_t cs) : Adafruit_GFX(ST7789_TFTWIDTH, ST7789_TFTHEIGHT) 
+ST7789_AVR::ST7789_AVR(int8_t dc, int8_t rst, int8_t cs) : Adafruit_GFX(ST7789_TFTWIDTH, ST7789_TFTHEIGHT)
 {
   csPin = cs;
   dcPin = dc;
@@ -270,7 +270,7 @@ ST7789_AVR::ST7789_AVR(int8_t dc, int8_t rst, int8_t cs) : Adafruit_GFX(ST7789_T
 }
 
 // ----------------------------------------------------------
-void ST7789_AVR::init(uint16_t wd, uint16_t ht) 
+void ST7789_AVR::init(uint16_t wd, uint16_t ht)
 {
   commonST7789Init(NULL);
 
@@ -301,7 +301,7 @@ void ST7789_AVR::init(uint16_t wd, uint16_t ht)
 }
 
 // ----------------------------------------------------------
-void ST7789_AVR::displayInit(const uint8_t *addr) 
+void ST7789_AVR::displayInit(const uint8_t *addr)
 {
   uint8_t  numCommands, numArgs;
   uint16_t ms;
@@ -323,7 +323,7 @@ void ST7789_AVR::displayInit(const uint8_t *addr)
 
 // ----------------------------------------------------------
 // Initialization code common to all ST7789 displays
-void ST7789_AVR::commonST7789Init(const uint8_t *cmdList) 
+void ST7789_AVR::commonST7789Init(const uint8_t *cmdList)
 {
   Serial.println(F("ST7789_AVR lib init"));
   pinMode(dcPin, OUTPUT);
@@ -365,7 +365,7 @@ void ST7789_AVR::commonST7789Init(const uint8_t *cmdList)
 }
 
 // ----------------------------------------------------------
-void ST7789_AVR::setRotation(uint8_t m) 
+void ST7789_AVR::setRotation(uint8_t m)
 {
   rotation = m & 3;
   switch (rotation) {
@@ -411,7 +411,7 @@ void ST7789_AVR::setAddrWindow(uint16_t xs, uint16_t ys, uint16_t xe, uint16_t y
 
   CS_ACTIVE;
   SPI_START;
-  
+
   DC_COMMAND; writeSPI(ST7789_CASET);
   DC_DATA;
   writeSPI(xs >> 8); writeSPI(xs);
@@ -429,7 +429,7 @@ void ST7789_AVR::setAddrWindow(uint16_t xs, uint16_t ys, uint16_t xe, uint16_t y
 }
 
 // ----------------------------------------------------------
-void ST7789_AVR::pushColor(uint16_t color) 
+void ST7789_AVR::pushColor(uint16_t color)
 {
   SPI_START;
   //DC_DATA;
@@ -442,7 +442,7 @@ void ST7789_AVR::pushColor(uint16_t color)
 }
 
 // ----------------------------------------------------------
-void ST7789_AVR::drawPixel(int16_t x, int16_t y, uint16_t color) 
+void ST7789_AVR::drawPixel(int16_t x, int16_t y, uint16_t color)
 {
   if(x<0 ||x>=_width || y<0 || y>=_height) return;
   setAddrWindow(x,y,x,y);
@@ -477,7 +477,7 @@ void ST7789_AVR::drawPixel(int16_t x, int16_t y, uint16_t color)
 
 // ----------------------------------------------------------
 // full clipping
-void ST7789_AVR::drawFastVLine(int16_t x, int16_t y, int16_t h, uint16_t color) 
+void ST7789_AVR::drawFastVLine(int16_t x, int16_t y, int16_t h, uint16_t color)
 {
   if(x>=_width || y>=_height || h<=0) return;
   if(y+h>_height) h=_height-y;
@@ -493,7 +493,7 @@ void ST7789_AVR::drawFastVLine(int16_t x, int16_t y, int16_t h, uint16_t color)
 
 // ----------------------------------------------------------
 // full clipping
-void ST7789_AVR::drawFastHLine(int16_t x, int16_t y, int16_t w,  uint16_t color) 
+void ST7789_AVR::drawFastHLine(int16_t x, int16_t y, int16_t w,  uint16_t color)
 {
   if(x>=_width || y>=_height || w<=0) return;
   if(x+w>_width)  w=_width-x;
@@ -509,7 +509,7 @@ void ST7789_AVR::drawFastHLine(int16_t x, int16_t y, int16_t w,  uint16_t color)
 
 // ----------------------------------------------------------
 // full clipping
-void ST7789_AVR::fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color) 
+void ST7789_AVR::fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color)
 {
   if(x>=_width || y>=_height || w<=0 || h<=0) return;
   if(x+w>_width)  w=_width -x;
@@ -528,14 +528,14 @@ void ST7789_AVR::fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t c
 }
 
 // ----------------------------------------------------------
-void ST7789_AVR::fillScreen(uint16_t color) 
+void ST7789_AVR::fillScreen(uint16_t color)
 {
   fillRect(0, 0, _width, _height, color);
 }
 
 // ----------------------------------------------------------
 // draws image from RAM, only basic clipping
-void ST7789_AVR::drawImage(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t *img16) 
+void ST7789_AVR::drawImage(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t *img16)
 {
   // all clipping should be on the application side
   if(w<=0 || h<=0) return;  // left for compatibility
@@ -552,7 +552,7 @@ void ST7789_AVR::drawImage(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t 
 
 // ----------------------------------------------------------
 // draws image from flash (PROGMEM)
-void ST7789_AVR::drawImageF(int16_t x, int16_t y, int16_t w, int16_t h, const uint16_t *img16) 
+void ST7789_AVR::drawImageF(int16_t x, int16_t y, int16_t w, int16_t h, const uint16_t *img16)
 {
   if(x>=_width || y>=_height || w<=0 || h<=0) return;
   setAddrWindow(x, y, x+w-1, y+h-1);
@@ -579,51 +579,51 @@ void ST7789_AVR::drawImageF(int16_t x, int16_t y, int16_t w, int16_t h, const ui
 
 // ----------------------------------------------------------
 // Pass 8-bit (each) R,G,B, get back 16-bit packed color
-uint16_t ST7789_AVR::Color565(uint8_t r, uint8_t g, uint8_t b) 
+uint16_t ST7789_AVR::Color565(uint8_t r, uint8_t g, uint8_t b)
 {
   return ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3);
 }
 
 // ----------------------------------------------------------
-void ST7789_AVR::invertDisplay(boolean mode) 
+void ST7789_AVR::invertDisplay(boolean mode)
 {
   writeCmd(!mode ? ST7789_INVON : ST7789_INVOFF);  // modes inverted?
 }
 
 // ----------------------------------------------------------
-void ST7789_AVR::partialDisplay(boolean mode) 
+void ST7789_AVR::partialDisplay(boolean mode)
 {
   writeCmd(mode ? ST7789_PTLON : ST7789_NORON);
 }
 
 // ----------------------------------------------------------
-void ST7789_AVR::sleepDisplay(boolean mode) 
+void ST7789_AVR::sleepDisplay(boolean mode)
 {
   writeCmd(mode ? ST7789_SLPIN : ST7789_SLPOUT);
   delay(5);
 }
 
 // ----------------------------------------------------------
-void ST7789_AVR::enableDisplay(boolean mode) 
+void ST7789_AVR::enableDisplay(boolean mode)
 {
   writeCmd(mode ? ST7789_DISPON : ST7789_DISPOFF);
 }
 
 // ----------------------------------------------------------
-void ST7789_AVR::idleDisplay(boolean mode) 
+void ST7789_AVR::idleDisplay(boolean mode)
 {
   writeCmd(mode ? ST7789_IDMON : ST7789_IDMOFF);
 }
 
 // ----------------------------------------------------------
-void ST7789_AVR::resetDisplay() 
+void ST7789_AVR::resetDisplay()
 {
   writeCmd(ST7789_SWRESET);
   delay(5);
 }
 
 // ----------------------------------------------------------
-void ST7789_AVR::setScrollArea(uint16_t tfa, uint16_t bfa) 
+void ST7789_AVR::setScrollArea(uint16_t tfa, uint16_t bfa)
 {
   uint16_t vsa = 320-tfa-bfa; // ST7789 320x240 VRAM
   writeCmd(ST7789_VSCRDEF);
@@ -633,14 +633,14 @@ void ST7789_AVR::setScrollArea(uint16_t tfa, uint16_t bfa)
 }
 
 // ----------------------------------------------------------
-void ST7789_AVR::setScroll(uint16_t vsp) 
+void ST7789_AVR::setScroll(uint16_t vsp)
 {
   writeCmd(ST7789_VSCRSADD);
   writeData16(vsp);
 }
 
 // ----------------------------------------------------------
-void ST7789_AVR::setPartArea(uint16_t sr, uint16_t er) 
+void ST7789_AVR::setPartArea(uint16_t sr, uint16_t er)
 {
   writeCmd(ST7789_PTLAR);
   writeData16(sr);
@@ -649,7 +649,7 @@ void ST7789_AVR::setPartArea(uint16_t sr, uint16_t er)
 
 // ----------------------------------------------------------
 // doesn't work
-void ST7789_AVR::setBrightness(uint8_t br) 
+void ST7789_AVR::setBrightness(uint8_t br)
 {
   //writeCmd(ST7789_WRCACE);
   //writeData(0xb1);  // 80,90,b0, or 00,01,02,03
@@ -669,7 +669,7 @@ void ST7789_AVR::setBrightness(uint8_t br)
 // 1 - idle
 // 2 - normal
 // 4 - display off
-void ST7789_AVR::powerSave(uint8_t mode) 
+void ST7789_AVR::powerSave(uint8_t mode)
 {
   if(mode==0) {
     writeCmd(ST7789_POWSAVE);
@@ -694,7 +694,7 @@ void ST7789_AVR::powerSave(uint8_t mode)
 void ST7789_AVR::rgbWheel(int idx, uint8_t *_r, uint8_t *_g, uint8_t *_b)
 {
   idx &= 0x1ff;
-  if(idx < 85) { // R->Y  
+  if(idx < 85) { // R->Y
     *_r = 255; *_g = idx * 3; *_b = 0;
     return;
   } else if(idx < 85*2) { // Y->G
@@ -704,22 +704,22 @@ void ST7789_AVR::rgbWheel(int idx, uint8_t *_r, uint8_t *_g, uint8_t *_b)
   } else if(idx < 85*3) { // G->C
     idx -= 85*2;
     *_r = 0; *_g = 255; *_b = idx * 3;
-    return;  
+    return;
   } else if(idx < 85*4) { // C->B
     idx -= 85*3;
     *_r = 0; *_g = 255 - idx * 3; *_b = 255;
-    return;    
+    return;
   } else if(idx < 85*5) { // B->M
     idx -= 85*4;
     *_r = idx * 3; *_g = 0; *_b = 255;
-    return;    
+    return;
   } else { // M->R
     idx -= 85*5;
     if(idx>85) idx=85;
     *_r = 255; *_g = 0; *_b = 255 - idx * 3;
    return;
   }
-} 
+}
 
 uint16_t ST7789_AVR::rgbWheel(int idx)
 {
