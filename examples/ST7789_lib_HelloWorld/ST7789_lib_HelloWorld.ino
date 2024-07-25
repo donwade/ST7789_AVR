@@ -51,8 +51,12 @@ ST7789 240x320 2.0" IPS - only 4+2 wires required:
 #define TFT_CS     13   // YELLOW   pass blinky
 #define TFT_RST    5    // BROWN    pass blinky
 
+//
+//==================================================
+//https://github.com/espressif/arduino-esp32/blob/master/libraries/SPI/examples/SPI_Multiple_Buses/SPI_Multiple_Buses.ino
+static const int spiClk = 1000000;  // 1 MHz
 
-#define BLINKY_TEST
+//#define BLINKY_TEST
 #ifdef BLINKY_TEST
 #define BLINK_BLUE_LED 2
 #define BLINK_ONE_LED TFT_DC    //BLUE
@@ -93,24 +97,39 @@ void loop() {
 #else
 
 #define SCR_WD 240
-#define SCR_HT 240
+#define SCR_HT 280
+#define LED_BUILTIN 2
 
-ST7789_AVR lcd = ST7789_AVR(TFT_DC, TFT_RST, TFT_CS);
+
+ST7789_AVR lcd = ST7789_AVR(TFT_DC, TFT_RST, TFT_CS, TFT_MOSI, TFT_CLK);
 
 void setup(void)
 {
   Serial.begin(115200);
+
   lcd.init(SCR_WD, SCR_HT);
+  lcd.clearScreen();
+
   lcd.fillScreen(RED);
+  lcd.enableDisplay(true);
+  printf("%s %d\n", __FUNCTION__, __LINE__);
+  delay(5000);
+
   lcd.setCursor(0, 0);
+  printf("%s %d\n", __FUNCTION__, __LINE__);
   lcd.setTextColor(WHITE,BLUE);
+  printf("%s %d\n", __FUNCTION__, __LINE__);
   lcd.setTextSize(3);
-  lcd.println("HELLO WORLD"); // using Adafruit default font
+  printf("%s %d\n", __FUNCTION__, __LINE__);
+
+  lcd.powerSave(2);
+  lcd.enableDisplay(true);
  }
 
 void loop()
 {
-    delay(-1);
+    static unsigned long cnt;
+    lcd.println(cnt++); // using Adafruit default font
 }
 
 #endif

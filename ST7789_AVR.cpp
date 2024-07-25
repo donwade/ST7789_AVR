@@ -7,6 +7,26 @@
 //#include "wiring_private.h"
 #include <SPI.h>
 
+#ifndef LED_BUILTIN
+  #define LED_BUILTIN 2
+#endif
+void dprintf( const char *format, ...) {
+    char buffer[200];
+	static bool bInit = false;
+
+    va_list args;
+    va_start(args, format);
+    vsprintf(buffer, format, args);
+    va_end(args);
+    if (bInit == false)
+    {
+    	Serial.begin(115200);
+    	bInit = true;
+    }
+    Serial.print(buffer);
+}
+
+
 /*
 Changes:
 - fixed drawPixel window
@@ -97,8 +117,8 @@ static const uint8_t init_240x240[] = {
 
 #ifdef COMPATIBILITY_MODE
 static SPISettings spiSettings;
-#define SPI_START  SPI.beginTransaction(spiSettings)
-#define SPI_END    SPI.endTransaction()
+#define SPI_START  hspi->beginTransaction(spiSettings)
+#define SPI_END    hspi->endTransaction()
 #else
 #define SPI_START
 #define SPI_END
@@ -130,7 +150,7 @@ static SPISettings spiSettings;
 inline void ST7789_AVR::writeSPI(uint8_t c)
 {
 #ifdef COMPATIBILITY_MODE
-    SPI.transfer(c);
+    hspi->transfer(c);
 #else
     SPDR = c;
     /*
@@ -156,7 +176,7 @@ inline void ST7789_AVR::writeSPI(uint8_t c)
 inline void ST7789_AVR::writeMulti(uint16_t color, uint16_t num)
 {
 #ifdef COMPATIBILITY_MODE
-  while(num--) { SPI.transfer(color>>8);  SPI.transfer(color); }
+  while(num--) { hspi->transfer(color>>8);  hspi->transfer(color); }
 #else
   asm volatile
   (
@@ -191,7 +211,7 @@ inline void ST7789_AVR::writeMulti(uint16_t color, uint16_t num)
 inline void ST7789_AVR::copyMulti(uint8_t *img, uint16_t num)
 {
 #ifdef COMPATIBILITY_MODE
-  while(num--) { SPI.transfer(*(img+1)); SPI.transfer(*(img+0)); img+=2; }
+  while(num--) { hspi->transfer(*(img+1)); hspi->transfer(*(img+0)); img+=2; }
 #else
   uint8_t lo,hi;
   asm volatile
@@ -225,6 +245,8 @@ inline void ST7789_AVR::copyMulti(uint8_t *img, uint16_t num)
 // ----------------------------------------------------------
 void ST7789_AVR::writeCmd(uint8_t c)
 {
+  //dprintf("%s = 0x%02X %d\n", __FUNCTION__, c,c);
+
   DC_COMMAND;
   CS_ACTIVE;
   SPI_START;
@@ -235,9 +257,13 @@ void ST7789_AVR::writeCmd(uint8_t c)
   SPI_END;
 }
 
+
 // ----------------------------------------------------------
 void ST7789_AVR::writeData(uint8_t d8)
 {
+
+  //dprintf("\t%s = 0x%02X %d\n", __FUNCTION__, d8, d8);
+
   DC_DATA;
   CS_ACTIVE;
   SPI_START;
@@ -262,16 +288,26 @@ void ST7789_AVR::writeData16(uint16_t d16)
 }
 
 // ----------------------------------------------------------
-ST7789_AVR::ST7789_AVR(int8_t dc, int8_t rst, int8_t cs) : Adafruit_GFX(ST7789_TFTWIDTH, ST7789_TFTHEIGHT)
+ST7789_AVR::ST7789_AVR(int8_t dc, int8_t rst, int8_t cs, int8_t mosi, int8_t clk) : Adafruit_GFX(ST7789_TFTWIDTH, ST7789_TFTHEIGHT)
 {
   csPin = cs;
   dcPin = dc;
   rstPin = rst;
+  mosiPin = mosi;
+  clkPin = clk;
 }
 
 // ----------------------------------------------------------
 void ST7789_AVR::init(uint16_t wd, uint16_t ht)
 {
+
+  //SCLK, MISO, MOSI, SS
+  hspi = new SPIClass(HSPI);
+  hspi->begin(clkPin  , LED_BUILTIN, mosiPin,  csPin);  //miso = LED_BUILTIN
+  pinMode(hspi->pinSS(), OUTPUT);  //HSPI SS
+
+
+
   commonST7789Init(NULL);
 
   if(wd==240 && ht==280) {
@@ -298,6 +334,7 @@ void ST7789_AVR::init(uint16_t wd, uint16_t ht)
 
   displayInit(init_240x240);
   setRotation(2);
+
 }
 
 // ----------------------------------------------------------
@@ -305,7 +342,10 @@ void ST7789_AVR::displayInit(const uint8_t *addr)
 {
   uint8_t  numCommands, numArgs;
   uint16_t ms;
+
+  printf("%s %d\n", __FUNCTION__, __LINE__);
   numCommands = pgm_read_byte(addr++);
+
   while(numCommands--) {
     writeCmd(pgm_read_byte(addr++));
     numArgs  = pgm_read_byte(addr++);
@@ -341,12 +381,13 @@ void ST7789_AVR::commonST7789Init(const uint8_t *cmdList)
 #endif
 
   // on AVR ST7789 works correctly in MODE2 and MODE3 but for STM32 only MODE3 seems to be working
-  SPI.begin();
+  //hspi->begin();
+
 #ifdef COMPATIBILITY_MODE
   spiSettings = SPISettings(16000000, MSBFIRST, SPI_MODE3);  // 8000000 gives max speed on AVR 16MHz
 #else
-  SPI.setClockDivider(SPI_CLOCK_DIV2);
-  SPI.setDataMode(SPI_MODE3);
+  hspi->setClockDivider(SPI_CLOCK_DIV2);
+  hspi->setDataMode(SPI_MODE3);
 #endif
 
   if(csPin>=0) { pinMode(csPin, OUTPUT); digitalWrite(csPin, LOW); }
@@ -729,3 +770,4 @@ uint16_t ST7789_AVR::rgbWheel(int idx)
 }
 
 // ------------------------------------------------
+
