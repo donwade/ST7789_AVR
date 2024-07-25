@@ -19,7 +19,7 @@
 //#include <avr/pgmspace.h>
 
 #define ST7789_TFTWIDTH 	240
-#define ST7789_TFTHEIGHT 	240
+#define ST7789_TFTHEIGHT 	280
 
 // Color definitions
 
