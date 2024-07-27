@@ -49,15 +49,9 @@ ST7789 240x320 2.0" IPS - only 4+2 wires required:
 #include <Adafruit_GFX.h>
 #include "ST7789_AVR.h"
 
-#define TFT_DC   10
-#define TFT_CS    9  // with CS
-#define TFT_RST  -1  // with CS
-//#define TFT_CS  -1 // without CS
-//#define TFT_RST  9 // without CS
-
-#define SCR_WD 240
-#define SCR_HT 320
-ST7789_AVR lcd = ST7789_AVR(TFT_DC, TFT_RST, TFT_CS);
+// pick up driver defined dimensons.
+#define SCR_WD ST7789_TFTWIDTH
+#define SCR_HT ST7789_TFTHEIGHT
 
 #include "ball.h"
 
@@ -76,6 +70,9 @@ uint16_t lineColS = RGBto565(90,20,90);
 #define LINE_XS2 6
 #define SP 20
 
+
+#if 0
+// not sure why the number is shaved.
 // support for 240, 280 and 320 line LCDs
 #if SCR_HT==240
 #define BALL_SHT 180
@@ -83,6 +80,9 @@ uint16_t lineColS = RGBto565(90,20,90);
 #define BALL_SHT 260
 #elif SCR_HT==280
 #define BALL_SHT 220
+#endif
+#else
+#define BALL_SHT SCR_HT  //I'm not chasing this. It works.
 #endif
 
 #define SHADOW 20
@@ -102,7 +102,7 @@ void drawBall(int x, int y)
     //if(yy==LINE_YS      || yy==LINE_YS+1*SP || yy==LINE_YS+2*SP || yy==LINE_YS+3*SP || yy==LINE_YS+4*SP || yy==LINE_YS+5*SP || yy==LINE_YS+6*SP ||
     //   yy==LINE_YS+7*SP) {  // ugly but fast
     if(yy==LINE_YS      || yy==LINE_YS+1*SP || yy==LINE_YS+2*SP || yy==LINE_YS+3*SP || yy==LINE_YS+4*SP || yy==LINE_YS+5*SP || yy==LINE_YS+6*SP ||
-       yy==LINE_YS+7*SP || yy==LINE_YS+8*SP || yy==LINE_YS+9*SP || yy==LINE_YS+10*SP || yy==LINE_YS+11*SP || yy==LINE_YS+12*SP) {  // ugly but fast 
+       yy==LINE_YS+7*SP || yy==LINE_YS+8*SP || yy==LINE_YS+9*SP || yy==LINE_YS+10*SP || yy==LINE_YS+11*SP || yy==LINE_YS+12*SP) {  // ugly but fast
     //if(((yy-LINE_YS)%SP)==0) {
       for(i=0;i<LINE_XS1;i++) line[i]=line[BALL_SWD-1-i]=bgCol;
       for(i=0;i<=BALL_SWD-LINE_XS1*2;i++) line[i+LINE_XS1]=lineCol;
@@ -135,7 +135,7 @@ void drawBall(int x, int y)
   }
 }
 
-void setup() 
+void setup()
 {
   Serial.begin(115200);
   lcd.init(SCR_WD,SCR_HT);
