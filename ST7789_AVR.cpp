@@ -10,6 +10,7 @@
 #ifndef LED_BUILTIN
   #define LED_BUILTIN 2
 #endif
+
 void dprintf( const char *format, ...) {
     char buffer[200];
 	static bool bInit = false;
@@ -26,6 +27,20 @@ void dprintf( const char *format, ...) {
     Serial.print(buffer);
 }
 
+// hide the pinout so no one else can mess them up.
+#define TFT_MOSI   23   //GREEN data out
+#define TFT_CLK    18   // ORANGE
+#define TFT_DC     19   // BLUE     pass blinky
+#define TFT_CS     13   // YELLOW   pass blinky
+#define TFT_RST    5    // BROWN    pass blinky
+#define TFT_BLGT   25   // GREY     pass blinky
+//
+//==================================================
+//https://github.com/espressif/arduino-esp32/blob/master/libraries/SPI/examples/SPI_Multiple_Buses/SPI_Multiple_Buses.ino
+static const int spiClk = 1000000;  // 1 MHz
+
+// setup global LCD
+ST7789_AVR lcd = ST7789_AVR(TFT_DC, TFT_RST, TFT_CS, TFT_MOSI, TFT_CLK);
 
 /*
 Changes:

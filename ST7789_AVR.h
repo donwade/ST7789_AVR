@@ -106,5 +106,6 @@ class ST7789_AVR : public Adafruit_GFX {
 };
 
 void dprintf( const char *format, ...);
+extern ST7789_AVR lcd;
 
 #endif
