@@ -45,15 +45,8 @@ ST7789 240x320 2.0" IPS - only 4+2 wires required:
 #include <Adafruit_GFX.h>
 #include "ST7789_AVR.h"
 
-#define TFT_DC   10
-//#define TFT_CS    9  // with CS
-//#define TFT_RST  -1  // with CS
-#define TFT_CS  -1 // without CS
-#define TFT_RST  9 // without CS
-
-#define SCR_WD 240
-#define SCR_HT 240
-ST7789_AVR lcd = ST7789_AVR(TFT_DC, TFT_RST, TFT_CS);
+#define SCR_WD ST7789_TFTWIDTH
+#define SCR_HT ST7789_TFTHEIGHT
 
 #include "bitmap.h"
 
@@ -61,7 +54,8 @@ uint16_t colorBar[50];
 
 void setup(void) 
 {
-  Serial.begin(9600);
+  Serial.begin(115200);
+
   lcd.init(SCR_WD, SCR_HT);
   lcd.fillScreen(BLACK);
 
