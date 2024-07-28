@@ -2,7 +2,7 @@
 // Numeric display - RREFont vs PropFont
 // (c) 2020-24 Pawel A. Hernik
 // YouTube videos:
-// https://youtu.be/OOvzmHcou4E 
+// https://youtu.be/OOvzmHcou4E
 // https://youtu.be/-F7EWPt0yIo
 
 // requires RRE Font library:
@@ -54,16 +54,6 @@ ST7789 240x320 2.0" IPS - only 4+2 wires required:
 #include <Adafruit_GFX.h>
 #include "ST7789_AVR.h"
 
-#define TFT_DC   10
-//#define TFT_CS    9  // with CS
-//#define TFT_RST  -1  // with CS
-#define TFT_CS  -1 // without CS
-#define TFT_RST  9 // without CS
-
-#define SCR_WD 240
-#define SCR_HT 240
-ST7789_AVR lcd = ST7789_AVR(TFT_DC, TFT_RST, TFT_CS);
-
 // define what kind of fonts should be used
 #define USE_RRE_FONTS 1
 
@@ -77,7 +67,7 @@ ST7789_AVR lcd = ST7789_AVR(TFT_DC, TFT_RST, TFT_CS);
 
 RREFont font;
 // needed for RREFont library initialization, define your fillRect
-void customRect(int x, int y, int w, int h, int c) { return lcd.fillRect(x, y, w, h, c); }  
+void customRect(int x, int y, int w, int h, int c) { return lcd.fillRect(x, y, w, h, c); }
 
 #else
 
@@ -86,26 +76,33 @@ void customRect(int x, int y, int w, int h, int c) { return lcd.fillRect(x, y, w
 #include "term9x14_font.h"
 
 PropFont font;
+
 // needed for PropFont library initialization, define your drawPixel and fillRect
 void customPixel(int x, int y, int c) { lcd.drawPixel(x, y, c); }
-void customRect(int x, int y, int w, int h, int c) { lcd.fillRect(x, y, w, h, c); } 
+void customRect(int x, int y, int w, int h, int c) { lcd.fillRect(x, y, w, h, c); }
 #endif
 
 //-----------------------------------------------------------------------------
 
 unsigned long ms = 0;
+// pick up driver defined dimensons.
+#define SCR_WD ST7789_TFTWIDTH
+#define SCR_HT ST7789_TFTHEIGHT
 
-void setup() 
+
+void setup()
 {
-  Serial.begin(9600);
+  Serial.begin(115200);
   lcd.init(SCR_WD, SCR_HT);
 #if USE_RRE_FONTS==1
-  font.init(customRect, SCR_WD, SCR_HT); // custom fillRect function and screen width and height values 
+  font.init(customRect, SCR_WD, SCR_HT); // custom fillRect function and screen width and height values
 #else
   font.init(customPixel, customRect, SCR_WD, SCR_HT); // custom drawPixel and fillRect function and screen width and height values
 #endif
-}
 
+  Serial.println("setup done");
+    delay(2000);
+}
 const uint16_t lnCol  = RGBto565(255,150,255);
 const uint16_t ln2Col = RGBto565(180,180,180);
 const uint16_t labCol = RGBto565(250,250,250);
@@ -154,7 +151,7 @@ void showVal(float v, int x, int y, int w,  int p, uint16_t col)
 {
   setBigNumFont();
   font.setColor(col,BLACK);
-  char txt[10];
+  char txt[25]; // stack smash. 10 is too small go bigger.
   dtostrf(v,w,p,txt);
   font.printStr(x,y,txt);
 }
@@ -199,14 +196,20 @@ void varData()
 
 void loop()
 {
+
+  Serial.println("ok");
+  delay (1000);
   if(mode!=lastMode) {
     lastMode=mode;
     lcd.fillScreen(BLACK);
     constData();
   }
+
   ms = millis();
   varData();
   tm = millis()-ms;
   Serial.println(tm);
+  yield();
+
 }
 
