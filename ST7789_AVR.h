@@ -87,8 +87,8 @@ class ST7789_AVR : public Adafruit_GFX {
 
   void displayInit(const uint8_t *addr);
   void writeSPI(uint8_t);
-  void writeMulti(uint16_t color, uint16_t num);
-  void copyMulti(uint8_t *img, uint16_t num);
+  void writeMulti(uint16_t color, uint32_t num);
+  void copyMulti(uint8_t *img, uint32_t num);
   void writeCmd(uint8_t c);
   void writeData(uint8_t d8);
   void writeData16(uint16_t d16);

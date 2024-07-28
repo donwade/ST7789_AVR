@@ -204,7 +204,7 @@ inline void ST7789_AVR::writeSPI(uint8_t c)
 
 // ----------------------------------------------------------
 // fast method to send multiple 16-bit values via SPI
-inline void ST7789_AVR::writeMulti(uint16_t color, uint16_t num)
+inline void ST7789_AVR::writeMulti(uint16_t color, uint32_t num)
 {
 #ifdef COMPATIBILITY_MODE
   while(num--) { hspi->transfer(color>>8);  hspi->transfer(color); }
@@ -239,7 +239,7 @@ inline void ST7789_AVR::writeMulti(uint16_t color, uint16_t num)
 }
 // ----------------------------------------------------------
 // fast method to send multiple 16-bit values from RAM via SPI
-inline void ST7789_AVR::copyMulti(uint8_t *img, uint16_t num)
+inline void ST7789_AVR::copyMulti(uint8_t *img, uint32_t num)
 {
 #ifdef COMPATIBILITY_MODE
   while(num--) { hspi->transfer(*(img+1)); hspi->transfer(*(img+0)); img+=2; }
@@ -592,7 +592,6 @@ void ST7789_AVR::fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t c
   if(h<=0) return;
   setAddrWindow(x, y, x+w-1, y+h-1);
 
-  if((long)w*h>0x10000) writeMulti(color,0); // when w*h>64k
   writeMulti(color,w*h);
 
   CS_IDLE;
