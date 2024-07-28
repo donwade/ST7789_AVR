@@ -2,8 +2,8 @@
 // Analog watch/clock, AVR + DS1307/DS3231 RTC module
 // (c) 2020 Pawel A. Hernik
 // YT videos:
-// https://youtu.be/jFGDFuLhdMc 
-// https://youtu.be/35Z0enhEYqM 
+// https://youtu.be/jFGDFuLhdMc
+// https://youtu.be/35Z0enhEYqM
 // https://youtu.be/Xr-dxPhePhY
 
 /*
@@ -54,15 +54,8 @@
 #include <Adafruit_GFX.h>
 #include "ST7789_AVR.h"
 
-#define TFT_DC   10
-//#define TFT_CS    9  // with CS
-//#define TFT_RST  -1  // with CS
-#define TFT_CS  -1 // without CS
-#define TFT_RST  9 // without CS
-
-#define SCR_WD 240
-#define SCR_HT 240
-ST7789_AVR lcd = ST7789_AVR(TFT_DC, TFT_RST, TFT_CS);
+#define SCR_WD ST7789_TFTWIDTH
+#define SCR_HT ST7789_TFTHEIGHT
 
 #define BUTTON  3
 
@@ -87,7 +80,9 @@ RTCData cur;
 #include <Wire.h>
 #include "rtc.h"
 
-uint8_t txt2num(const char* p) 
+//#define SLOW_DRAW
+
+uint8_t txt2num(const char* p)
 {
   return 10*(*p-'0') + *(p+1)-'0';
 }
@@ -124,9 +119,12 @@ uint16_t line[SCR_WD+4];
 
 void imgLineH(int x, int y, int w)
 {
-  uint8_t v,*img = (uint8_t*)clockface+4*2+6+y*SCR_WD/4+x/4;
-  int ww = (x&3)?w+4:w;
-  for(int i=0;i<ww;i+=4) {
+  uint8_t v;
+  uint8_t *img = (uint8_t*)clockface+4*2+6 + y*SCR_WD/4+ x/4;
+
+  int ww = (x&3) ? w+4 : w;
+
+  for(int i=0; i<ww; i+=4) {
     v = pgm_read_byte(img++);
     line[i+0] = palette[(v>>6)&3];
     line[i+1] = palette[(v>>4)&3];
@@ -134,11 +132,14 @@ void imgLineH(int x, int y, int w)
     line[i+3] = palette[v&3];
   }
   lcd.drawImage(x,y,w,1,line+(x&3));
+  #ifdef SLOW_DRAW
+    delay(10);
+  #endif
 }
 
 void imgRect(int x, int y, int w, int h)
 {
-  for(int i=y;i<y+h;i++) imgLineH(x,i,w);
+  for(int i=y; i<y+h ;i++) imgLineH(x,i,w);
 }
 // ----------------------------------------------------------------
 #define swap(a, b) { int16_t t = a; a = b; b = t; }
@@ -158,24 +159,24 @@ void imgTriangle(int16_t x1,int16_t y1,int16_t x2,int16_t y2,int16_t x3,int16_t 
 
   dx1 = x2 - x1; if(dx1<0) { dx1=-dx1; signx1=-1; } else signx1=1;
   dy1 = y2 - y1;
- 
+
   dx2 = x3 - x1; if(dx2<0) { dx2=-dx2; signx2=-1; } else signx2=1;
   dy2 = y3 - y1;
-  
+
   if (dy1 > dx1) { swap(dx1,dy1); changed1 = true; }
   if (dy2 > dx2) { swap(dy2,dx2); changed2 = true; }
-  
+
   e2 = dx2>>1;
   if(y1==y2) goto next;  // Flat top, just process the second half
   e1 = dx1>>1;
-  
+
   for (uint16_t i = 0; i < dx1;) {
     t1xp=0; t2xp=0;
     if(t1x<t2x) { minx=t1x; maxx=t2x; }
     else    { minx=t2x; maxx=t1x; }
     // process first line until y value is about to change
     while(i<dx1) {
-      i++;      
+      i++;
       e1 += dy1;
       while (e1 >= dx1) {
         e1 -= dx1;
@@ -189,7 +190,7 @@ void imgTriangle(int16_t x1,int16_t y1,int16_t x2,int16_t y2,int16_t x3,int16_t 
   next1:
     // process second line until y value is about to change
     while (1) {
-      e2 += dy2;    
+      e2 += dy2;
       while (e2 >= dx2) {
         e2 -= dx2;
         if (changed2) t2xp=signx2;//t2x += signx2;
@@ -201,9 +202,9 @@ void imgTriangle(int16_t x1,int16_t y1,int16_t x2,int16_t y2,int16_t x3,int16_t 
   next2:
     if(minx>t1x) minx=t1x; if(minx>t2x) minx=t2x;
     if(maxx<t1x) maxx=t1x; if(maxx<t2x) maxx=t2x;
-    
+
     // line from min to max points found on the y
-    if(c) lcd.drawFastHLine(minx, y, maxx-minx, c); else imgLineH(minx, y, maxx-minx); 
+    if(c) lcd.drawFastHLine(minx, y, maxx-minx, c); else imgLineH(minx, y, maxx-minx);
     // increase y
     if(!changed1) t1x += signx1;
     t1x+=t1xp;
@@ -211,19 +212,19 @@ void imgTriangle(int16_t x1,int16_t y1,int16_t x2,int16_t y2,int16_t x3,int16_t 
     t2x+=t2xp;
     y += 1;
     if(y==y2) break;
-    
+
    }
   next:
-  
+
   // Second half
   dx1 = x3 - x2; if(dx1<0) { dx1=-dx1; signx1=-1; } else signx1=1;
   dy1 = y3 - y2;
   t1x=x2;
- 
+
   if (dy1 > dx1) { swap(dy1,dx1); changed1 = true; } else changed1=false;
-  
+
   e1 = dx1>>1;
-  
+
   for (uint16_t i = 0; i<=dx1; i++) {
     t1xp=0; t2xp=0;
     if(t1x<t2x) { minx=t1x; maxx=t2x; }
@@ -251,12 +252,12 @@ void imgTriangle(int16_t x1,int16_t y1,int16_t x2,int16_t y2,int16_t x3,int16_t 
       }
       if (changed2)     break;
       else              t2x += signx2;
-    }        
+    }
   next4:
     if(minx>t1x) minx=t1x; if(minx>t2x) minx=t2x;
     if(maxx<t1x) maxx=t1x; if(maxx<t2x) maxx=t2x;
     // line from min to max points found on the y
-    if(c) lcd.drawFastHLine(minx, y, maxx-minx, c); else imgLineH(minx, y, maxx-minx); 
+    if(c) lcd.drawFastHLine(minx, y, maxx-minx, c); else imgLineH(minx, y, maxx-minx);
     // increase y
     if(!changed1) t1x += signx1;
     t1x+=t1xp;
@@ -341,7 +342,7 @@ void drawHandS(int deg, int w, int l, int col1=0, int col2=0)
   imgTriangle(x[6],y[6], x[7],y[7], x[4],y[4], col1);
 }
 
-void clockUpdate() 
+void clockUpdate()
 {
   if(millis()-ms<1000 && !start) return;
   ms = millis();
@@ -374,7 +375,7 @@ void clockUpdate()
     mDegOld = mDeg;
     hDegOld = hDeg;
   }
-  
+
   drawHandS(sDegOld,sHandW,sHandL);
   if(setMode==1)
     drawHand(hDeg,hHandW,hHandL,selHandCol1,selHandCol2);
@@ -414,11 +415,11 @@ int checkButton()
   if( state == LOW && stateOld == HIGH ) { btTime = millis(); stateOld = state; return 0; } // button just pressed
   if( state == HIGH && stateOld == LOW ) { // button just released
     stateOld = state;
-    if( millis()-btTime >= btDebounce && millis()-btTime < btLongClick ) { 
+    if( millis()-btTime >= btDebounce && millis()-btTime < btLongClick ) {
       if( millis()-btTime2<btDoubleClick ) clickCnt++; else clickCnt=1;
       btTime2 = millis();
-      return clickCnt; 
-    } 
+      return clickCnt;
+    }
   }
   if( state == LOW && millis()-btTime >= btLongerClick ) { stateOld = state; return -2; }
   if( state == LOW && millis()-btTime >= btLongClick ) { stateOld = state; return -1; }
@@ -458,20 +459,27 @@ void setBuildTime()
 }
 
 //-----------------------------------------------------------------------------
+#define BIT_IMAGE_WD 240
+#define BIT_IMAGE_HT 240
 
-void setup() 
+void setup()
 {
   Serial.begin(9600);
   pinMode(BUTTON, INPUT_PULLUP);
   Wire.begin();
   Wire.setClock(400000);  // faster
+
   lcd.init(SCR_WD, SCR_HT);
+  lcd.fillScreen(RED);
+  lcd.clearScreen();
+
   //getRTCDateTime(&cur);
   if(cur.year+2000<2020) setBuildTime();  //  <2020 - invalid year
   uint16_t *pal = (uint16_t*)clockface+3;
+
   for(int i=0;i<4;i++) palette[i]=pgm_read_word(pal++);
-  imgRect(0,0,SCR_WD,SCR_HT);
-  ms = millis(); 
+  imgRect(0,0,BIT_IMAGE_WD,BIT_IMAGE_HT);
+  ms = millis();
 }
 
 void loop()
