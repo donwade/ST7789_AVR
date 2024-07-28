@@ -7,8 +7,8 @@
 //#include "wiring_private.h"
 #include <SPI.h>
 
-#ifndef LED_BUILTIN
-  #define LED_BUILTIN 2
+#ifndef FAKE_MISO_PIN
+  #define FAKE_MISO_PIN 0  // probably no one uses it.
 #endif
 
 void dprintf( const char *format, ...) {
@@ -334,7 +334,7 @@ void ST7789_AVR::init(uint16_t wd, uint16_t ht)
 
   //SCLK, MISO, MOSI, SS
   hspi = new SPIClass(HSPI);
-  hspi->begin(clkPin  , LED_BUILTIN, mosiPin,  csPin);  //miso = LED_BUILTIN
+  hspi->begin(clkPin  , FAKE_MISO_PIN, mosiPin,  csPin);  //miso = FAKE_MISO_PIN
   pinMode(hspi->pinSS(), OUTPUT);  //HSPI SS
 
 
