@@ -52,22 +52,15 @@ ST7789 240x320 2.0" IPS - only 4+2 wires required:
 #include <Adafruit_GFX.h>
 #include "ST7789_AVR.h"
 
-#define TFT_DC   10
-#define TFT_CS    9  // with CS
-#define TFT_RST  -1  // with CS
-//#define TFT_CS  -1 // without CS
-//#define TFT_RST  9 // without CS
-
-#define SCR_WD 240
-#define SCR_HT 240
-ST7789_AVR tft = ST7789_AVR(TFT_DC, TFT_RST, TFT_CS);
-
+#define SCR_WD ST7789_TFTWIDTH
+#define SCR_HT ST7789_TFTHEIGHT
 #include "RREFont.h"
 #include "rre_digitssimple5x7.h"
 #include "rre_digitssimple5x7bg.h"
+
 RREFont font;
 // needed for RREFont library initialization, define your fillRect
-void customRect(int x, int y, int w, int h, int c) { return tft.fillRect(x, y, w, h, c); }
+void customRect(int x, int y, int w, int h, int c) { return lcd.fillRect(x, y, w, h, c); }
 
 #define FRAME_TIME 10 // in miliseconds, 10 ms = limit to max 100 fps
 
@@ -91,12 +84,12 @@ unsigned long drawStart = 0;
 void setup(void)
 {
   Serial.begin(115200);
-  tft.init(SCR_WD,SCR_HT);
-  //tft.setRotation(2);
+  lcd.init(SCR_WD,SCR_HT);
+  //lcd.setRotation(2);
   font.init(customRect, SCR_WD, SCR_HT); // custom fillRect function and screen width and height values
 
-  tft.fillRect(0,        0, SCR_WD, SCR_HT/2, SKY_BLUE);
-  tft.fillRect(0, SCR_HT/2, SCR_WD, SCR_HT/2, BROWN);
+  lcd.fillRect(0,        0, SCR_WD, SCR_HT/2, SKY_BLUE);
+  lcd.fillRect(0, SCR_HT/2, SCR_WD, SCR_HT/2, BROWN);
   //drawHorizon(0, 0);
 
   // Test roll and pitch
@@ -193,23 +186,23 @@ void drawDiff(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color, ui
     if(x0>=0 && x0<SCR_HT ) {
       if(steep)  { // 46..90+44
         if(steep==lastSteep) {
-          if(y0>lastPos[x0]) tft.drawFastHLine(lastPos[x0],x0, y0-lastPos[x0], ground); else
-          if(y0<lastPos[x0]) tft.drawFastHLine(y0+lineWd,x0, lastPos[x0]-y0, sky);
+          if(y0>lastPos[x0]) lcd.drawFastHLine(lastPos[x0],x0, y0-lastPos[x0], ground); else
+          if(y0<lastPos[x0]) lcd.drawFastHLine(y0+lineWd,x0, lastPos[x0]-y0, sky);
         } else {
-          if(y0>lastPos2[x0]) tft.drawFastHLine(lastPos2[x0],x0, y0-lastPos2[x0], ground); else
-          if(y0<lastPos2[x0]) tft.drawFastHLine(y0+lineWd,x0, lastPos2[x0]-y0, sky);
+          if(y0>lastPos2[x0]) lcd.drawFastHLine(lastPos2[x0],x0, y0-lastPos2[x0], ground); else
+          if(y0<lastPos2[x0]) lcd.drawFastHLine(y0+lineWd,x0, lastPos2[x0]-y0, sky);
         }
-        tft.drawFastHLine(y0, x0,lineWd, color);
+        lcd.drawFastHLine(y0, x0,lineWd, color);
         lastPos[x0]=y0;
       } else {
         if(steep==lastSteep) {
-          if(y0>lastPos[x0]) tft.drawFastVLine(x0, lastPos[x0], y0-lastPos[x0], sky); else
-          if(y0<lastPos[x0]) tft.drawFastVLine(x0, y0+lineWd, lastPos[x0]-y0, ground);
+          if(y0>lastPos[x0]) lcd.drawFastVLine(x0, lastPos[x0], y0-lastPos[x0], sky); else
+          if(y0<lastPos[x0]) lcd.drawFastVLine(x0, y0+lineWd, lastPos[x0]-y0, ground);
         } else {
-          if(y0>lastPos2[x0]) tft.drawFastVLine(x0, lastPos2[x0], y0-lastPos2[x0], sky); else
-          if(y0<lastPos2[x0]) tft.drawFastVLine(x0, y0+lineWd, lastPos2[x0]-y0, ground);
+          if(y0>lastPos2[x0]) lcd.drawFastVLine(x0, lastPos2[x0], y0-lastPos2[x0], sky); else
+          if(y0<lastPos2[x0]) lcd.drawFastVLine(x0, y0+lineWd, lastPos2[x0]-y0, ground);
         }
-        tft.drawFastVLine(x0, y0,lineWd, color);
+        lcd.drawFastVLine(x0, y0,lineWd, color);
         lastPos[x0]=y0;
       }
     } 
@@ -237,13 +230,13 @@ void drawFull(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color, ui
   for(; x0<=x1; x0++) {
     if(x0>=0 && x0<SCR_HT && y0>=0 && y0<SCR_WD ) {
       if(steep)  {
-        tft.drawFastHLine(0,x0, y0, ground); 
-        tft.drawFastHLine(y0+lineWd,x0, SCR_HT-y0-lineWd, sky);
-        tft.drawFastHLine(y0, x0,lineWd, color);
+        lcd.drawFastHLine(0,x0, y0, ground); 
+        lcd.drawFastHLine(y0+lineWd,x0, SCR_HT-y0-lineWd, sky);
+        lcd.drawFastHLine(y0, x0,lineWd, color);
       } else {
-        tft.drawFastVLine(x0, 0, y0, sky); 
-        tft.drawFastVLine(x0, y0+lineWd, SCR_HT-y0-lineWd, ground);
-        tft.drawFastVLine(x0, y0,lineWd, color);
+        lcd.drawFastVLine(x0, 0, y0, sky); 
+        lcd.drawFastVLine(x0, y0+lineWd, SCR_HT-y0-lineWd, ground);
+        lcd.drawFastVLine(x0, y0,lineWd, color);
       }
     }
     err -= dy;
@@ -283,22 +276,22 @@ void drawLines(void)
   int y0=YC;
 
   // Level wings graphic
-  tft.fillRect(x0 - 1, y0 - 1, 3, 3, RED);
-  tft.drawFastHLine(x0 - llh-6, y0, llh, RED);
-  tft.drawFastHLine(x0 + 6, y0, llh, RED);
-  tft.drawFastVLine(x0 - 6, y0, 6, RED);
-  tft.drawFastVLine(x0 + 6, y0, 6, RED);
+  lcd.fillRect(x0 - 1, y0 - 1, 3, 3, RED);
+  lcd.drawFastHLine(x0 - llh-6, y0, llh, RED);
+  lcd.drawFastHLine(x0 + 6, y0, llh, RED);
+  lcd.drawFastVLine(x0 - 6, y0, 6, RED);
+  lcd.drawFastVLine(x0 + 6, y0, 6, RED);
 
   // Pitch scale
-  tft.drawFastHLine(x0 - llh,   y0 - dy*4, ll, WHITE);
-  tft.drawFastHLine(x0 - lsh,   y0 - dy*3, ls, WHITE);
-  tft.drawFastHLine(x0 - llh,   y0 - dy*2, ll, WHITE);
-  tft.drawFastHLine(x0 - lsh,   y0 - dy*1, ls, WHITE);
+  lcd.drawFastHLine(x0 - llh,   y0 - dy*4, ll, WHITE);
+  lcd.drawFastHLine(x0 - lsh,   y0 - dy*3, ls, WHITE);
+  lcd.drawFastHLine(x0 - llh,   y0 - dy*2, ll, WHITE);
+  lcd.drawFastHLine(x0 - lsh,   y0 - dy*1, ls, WHITE);
 
-  tft.drawFastHLine(x0 - lsh,   y0 + dy*1, ls, WHITE);
-  tft.drawFastHLine(x0 - llh,   y0 + dy*2, ll, WHITE);
-  tft.drawFastHLine(x0 - lsh,   y0 + dy*3, ls, WHITE);
-  tft.drawFastHLine(x0 - llh,   y0 + dy*4, ll, WHITE);
+  lcd.drawFastHLine(x0 - lsh,   y0 + dy*1, ls, WHITE);
+  lcd.drawFastHLine(x0 - llh,   y0 + dy*2, ll, WHITE);
+  lcd.drawFastHLine(x0 - lsh,   y0 + dy*3, ls, WHITE);
+  lcd.drawFastHLine(x0 - llh,   y0 + dy*4, ll, WHITE);
 }
 
 void drawLabels(void)
@@ -336,11 +329,11 @@ void drawFPS(void)
     fps=fpsAvg/fpsCnt;
     fpsAvg=fpsCnt=0;
   }
-  tft.fillRect(x, y,           12*2+2*fpsFr, fpsFr, fpsBg);
-  tft.fillRect(x, y+7*2+fpsFr, 12*2+2*fpsFr, fpsFr, fpsBg);
-  tft.fillRect(x,            y+fpsFr, fpsFr, 7*2, fpsBg);
-  tft.fillRect(x+12*2+fpsFr, y+fpsFr, fpsFr, 7*2, fpsBg);
-  tft.fillRect(x+5*2+fpsFr,  y+fpsFr,     4, 7*2, fpsBg);
+  lcd.fillRect(x, y,           12*2+2*fpsFr, fpsFr, fpsBg);
+  lcd.fillRect(x, y+7*2+fpsFr, 12*2+2*fpsFr, fpsFr, fpsBg);
+  lcd.fillRect(x,            y+fpsFr, fpsFr, 7*2, fpsBg);
+  lcd.fillRect(x+12*2+fpsFr, y+fpsFr, fpsFr, 7*2, fpsBg);
+  lcd.fillRect(x+5*2+fpsFr,  y+fpsFr,     4, 7*2, fpsBg);
   char buf[6];
   snprintf(buf,5,"%02d",fps>99 ? 99 : fps);
   font.setFont(&rre_digitssimple5x7);
