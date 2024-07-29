@@ -19,7 +19,11 @@
 //#include <avr/pgmspace.h>
 
 #define ST7789_TFTWIDTH 	240
-#define ST7789_TFTHEIGHT 	280
+#define ST7789_TFTHEIGHT 	280 //dwade
+
+#define ST7789_RAMWIDTH 	240
+#define ST7789_RAMHEIGHT 	320 //dwade
+
 
 // Color definitions
 
@@ -45,11 +49,11 @@
 class ST7789_AVR : public Adafruit_GFX {
 
  public:
-  ST7789_AVR(int8_t DC, int8_t RST=-1, int8_t CS=-1, int8_t MOSI=-1, int8_t
-  CLK=-1);
+  ST7789_AVR(int8_t DC, int8_t RST=-1, int8_t CS=-1, int8_t MOSI=-1, int8_t  CLK=-1);
 
   void init(uint16_t wd, uint16_t ht);
   void begin() { init(ST7789_TFTWIDTH,ST7789_TFTHEIGHT); }
+  void speed(uint32_t speed);
   void init() { init(ST7789_TFTWIDTH,ST7789_TFTHEIGHT); }
   void setAddrWindow(uint16_t xs, uint16_t ys, uint16_t xe, uint16_t ye);
   void pushColor(uint16_t color);
@@ -82,7 +86,7 @@ class ST7789_AVR : public Adafruit_GFX {
   uint16_t rgbWheel(int idx);
 
  protected:
-  uint8_t xstart, ystart, xend, yend, xoffs, yoffs;
+  uint16_t xstart, ystart, xend, yend, xoffs, yoffs; // values can be > 256!!!
   uint16_t _widthIni, _heightIni;
 
   void displayInit(const uint8_t *addr);
@@ -102,7 +106,6 @@ class ST7789_AVR : public Adafruit_GFX {
   SPIClass *hspi = NULL;
 
   volatile uint8_t  *csPort, *dcPort;
-
 };
 
 void dprintf( const char *format, ...);

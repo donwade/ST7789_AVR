@@ -123,17 +123,17 @@ static const uint8_t init_240x240[] = {
 
 	ST7789_240x240_XSTART,          		// XSTART = 0
 
-	(ST7789_TFTWIDTH+ST7789_240x240_XSTART) >> 8,
+	(ST7789_RAMWIDTH+ST7789_240x240_XSTART) >> 8,
 
-	(ST7789_TFTWIDTH+ST7789_240x240_XSTART) & 0xFF,   // XEND = 240
+	(ST7789_RAMWIDTH+ST7789_240x240_XSTART) & 0xFF,   // XEND = 240
 
 	ST7789_RASET  , 4,  					// 6: Row addr set, 4 args, no delay:
 	0x00,
 
 	ST7789_240x240_YSTART,          		// YSTART = 0
 
-	(ST7789_TFTHEIGHT+ST7789_240x240_YSTART) >> 8,
-	(ST7789_TFTHEIGHT+ST7789_240x240_YSTART) & 0xFF,	// YEND = 240
+	(ST7789_RAMHEIGHT+ST7789_240x240_YSTART) >> 8,
+	(ST7789_RAMHEIGHT+ST7789_240x240_YSTART) & 0xFF,	// YEND = 240
 
 	ST7789_INVON ,   ST_CMD_DELAY,  		// 7: Inversion ON
 	10,
@@ -327,7 +327,6 @@ ST7789_AVR::ST7789_AVR(int8_t dc, int8_t rst, int8_t cs, int8_t mosi, int8_t clk
   mosiPin = mosi;
   clkPin = clk;
 }
-
 // ----------------------------------------------------------
 void ST7789_AVR::init(uint16_t wd, uint16_t ht)
 {
@@ -336,8 +335,6 @@ void ST7789_AVR::init(uint16_t wd, uint16_t ht)
   hspi = new SPIClass(HSPI);
   hspi->begin(clkPin  , FAKE_MISO_PIN, mosiPin,  csPin);  //miso = FAKE_MISO_PIN
   pinMode(hspi->pinSS(), OUTPUT);  //HSPI SS
-
-
 
   commonST7789Init(NULL);
 
@@ -359,6 +356,7 @@ void ST7789_AVR::init(uint16_t wd, uint16_t ht)
     xend   = 0;  yend   = 0;
     Serial.println(F("240x320"));
   }
+
   xoffs = yoffs = 0;
   _width  = _widthIni  = wd;
   _height = _heightIni = ht;
@@ -590,6 +588,8 @@ void ST7789_AVR::fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t c
   if(w<=0) return;
   if(y<0) { h+=y; y=0; }
   if(h<=0) return;
+
+  //dprintf("setAddrWindow(x=%3d, y=%3d, x+w-1=%3d, y+h-1=%3d\n",x, y, x+w-1, y+h-1);
   setAddrWindow(x, y, x+w-1, y+h-1);
 
   writeMulti(color,w*h);
