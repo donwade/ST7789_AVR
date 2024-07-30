@@ -1,64 +1,12 @@
 // ST7789 library example
 // (c) 2019 Pawel A. Hernik
 
-// requires RRE Font library:
-// https://github.com/cbm80amiga/RREFont
-
-/*
-ST7789 240x240 1.3" IPS (without CS pin) - only 4+2 wires required:
- #01 GND -> GND
- #02 VCC -> VCC (3.3V only!)
- #03 SCL -> D13/SCK
- #04 SDA -> D11/MOSI
- #05 RES -> D9 /PA0 or any digital (HW RESET is required to properly initialize LCD without CS)
- #06 DC  -> D10/PA1 or any digital
- #07 BLK -> NC
-
-ST7789 240x280 1.69" IPS - only 4+2 wires required:
- #01 GND -> GND
- #02 VCC -> VCC (3.3V only!)
- #03 SCL -> D13/SCK
- #04 SDA -> D11/MOSI
- #05 RES -> optional
- #06 DC  -> D10 or any digital
- #07 CS  -> D9 or any digital
- #08 BLK -> VCC
-
-ST7789 170x320 1.9" IPS - only 4+2 wires required:
- #01 GND -> GND
- #02 VCC -> VCC (3.3V only!)
- #03 SCL -> D13/SCK
- #04 SDA -> D11/MOSI
- #05 RES -> optional
- #06 DC  -> D10 or any digital
- #07 CS  -> D9 or any digital
- #08 BLK -> VCC
-
-ST7789 240x320 2.0" IPS - only 4+2 wires required:
- #01 GND -> GND
- #02 VCC -> VCC (3.3V only!)
- #03 SCL -> D13/SCK
- #04 SDA -> D11/MOSI
- #05 RES -> optional
- #06 DC  -> D10 or any digital
- #07 CS  -> D9 or any digital
-*/
-
 #include <SPI.h>
 #include <Adafruit_GFX.h>
 #include "ST7789_AVR.h"
 
-#define TFT_DC   10
-//#define TFT_CS    9  // with CS
-//#define TFT_RST  -1  // with CS
-#define TFT_CS  -1 // without CS
-#define TFT_RST  9 // without CS
-
-#define SCR_WD 240
-#define SCR_HT 320   // 320 - to access to full 240x320 frame buffer
-ST7789_AVR lcd = ST7789_AVR(TFT_DC, TFT_RST, TFT_CS);
-
-
+#define SCR_WD ST7789_TFTWIDTH
+#define SCR_HT ST7789_TFTHEIGHT
 #include "RREFont.h"
 #include "rre_times_98v.h"
 #include "rre_tahoma_65v.h"
@@ -93,7 +41,7 @@ int scrollCharRRE(unsigned char c)
     yscr += scrollStep;
     if(yscr>=maxy) yscr-=maxy;
     lcd.setScroll(yscr);
-    ycnt=yscr+240;
+    ycnt=yscr+ST7789_RAMHEIGHT;
     if(ycnt>=maxy) ycnt-=maxy;
     //Serial.println(String("ycnt=")+ycnt);
     int scrHOffs = screenHt-1;
@@ -123,7 +71,7 @@ int scrollCharRRE(unsigned char c)
       xf = pgm_read_byte(rFont->rects+idx+0);
     }
    //Serial.println("ys = "+String(ys)+"  "+String(charHt));
-    
+
     if(ybg<rFont->ht-1) { // last bg line
       wd = (rFont->ht-ybg)*sy;
       lcd.fillRect(scrWOffs-(offsY+ybg*sy)-wd, lineY, wd, sx, bg);
@@ -144,10 +92,10 @@ void scrollString(char *c)
   }
 }
 
-void setup() 
+void setup()
 {
   Serial.begin(9600);
-  lcd.init(SCR_WD, SCR_HT);
+  lcd.init();
   lcd.fillScreen(BLACK);
   lcd.setScrollArea(0,0);
 }
