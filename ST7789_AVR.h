@@ -54,7 +54,7 @@ class ST7789_AVR : public Adafruit_GFX {
   void init(uint16_t wd, uint16_t ht);
   void begin() { init(ST7789_TFTWIDTH,ST7789_TFTHEIGHT); }
   void speed(uint32_t speed);
-  void init() { init(ST7789_TFTWIDTH,ST7789_TFTHEIGHT); }
+  void init() { init(ST7789_RAMWIDTH,ST7789_RAMHEIGHT); }
   void setAddrWindow(uint16_t xs, uint16_t ys, uint16_t xe, uint16_t ye);
   void pushColor(uint16_t color);
   void fillScreen(uint16_t color=BLACK);
