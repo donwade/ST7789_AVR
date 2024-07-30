@@ -5,45 +5,6 @@
 // Added support for LCD height 320,280,240
 // Optimized ball refresh from 61 to 39ms
 
-/*
-ST7789 240x240 1.3" IPS (without CS pin) - only 4+2 wires required:
- #01 GND -> GND
- #02 VCC -> VCC (3.3V only!)
- #03 SCL -> D13/SCK
- #04 SDA -> D11/MOSI
- #05 RES -> D9 /PA0 or any digital (HW RESET is required to properly initialize LCD without CS)
- #06 DC  -> D10/PA1 or any digital
- #07 BLK -> NC
-
-ST7789 240x280 1.69" IPS - only 4+2 wires required:
- #01 GND -> GND
- #02 VCC -> VCC (3.3V only!)
- #03 SCL -> D13/SCK
- #04 SDA -> D11/MOSI
- #05 RES -> optional
- #06 DC  -> D10 or any digital
- #07 CS  -> D9 or any digital
- #08 BLK -> VCC
-
-ST7789 170x320 1.9" IPS - only 4+2 wires required:
- #01 GND -> GND
- #02 VCC -> VCC (3.3V only!)
- #03 SCL -> D13/SCK
- #04 SDA -> D11/MOSI
- #05 RES -> optional
- #06 DC  -> D10 or any digital
- #07 CS  -> D9 or any digital
- #08 BLK -> VCC
-
-ST7789 240x320 2.0" IPS - only 4+2 wires required:
- #01 GND -> GND
- #02 VCC -> VCC (3.3V only!)
- #03 SCL -> D13/SCK
- #04 SDA -> D11/MOSI
- #05 RES -> optional
- #06 DC  -> D10 or any digital
- #07 CS  -> D9 or any digital
-*/
 
 #include <SPI.h>
 #include <Adafruit_GFX.h>
