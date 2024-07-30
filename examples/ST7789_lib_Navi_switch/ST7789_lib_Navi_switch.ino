@@ -3,45 +3,6 @@
 // (c) 2019 Pawel A. Hernik
 // https://youtu.be/EO7pfz1KjJM 
 
-/*
-ST7789 240x240 1.3" IPS (without CS pin) - only 4+2 wires required:
- #01 GND -> GND
- #02 VCC -> VCC (3.3V only!)
- #03 SCL -> D13/SCK
- #04 SDA -> D11/MOSI
- #05 RES -> D9 /PA0 or any digital (HW RESET is required to properly initialize LCD without CS)
- #06 DC  -> D10/PA1 or any digital
- #07 BLK -> NC
-
-ST7789 240x280 1.69" IPS - only 4+2 wires required:
- #01 GND -> GND
- #02 VCC -> VCC (3.3V only!)
- #03 SCL -> D13/SCK
- #04 SDA -> D11/MOSI
- #05 RES -> optional
- #06 DC  -> D10 or any digital
- #07 CS  -> D9 or any digital
- #08 BLK -> VCC
-
-ST7789 170x320 1.9" IPS - only 4+2 wires required:
- #01 GND -> GND
- #02 VCC -> VCC (3.3V only!)
- #03 SCL -> D13/SCK
- #04 SDA -> D11/MOSI
- #05 RES -> optional
- #06 DC  -> D10 or any digital
- #07 CS  -> D9 or any digital
- #08 BLK -> VCC
-
-ST7789 240x320 2.0" IPS - only 4+2 wires required:
- #01 GND -> GND
- #02 VCC -> VCC (3.3V only!)
- #03 SCL -> D13/SCK
- #04 SDA -> D11/MOSI
- #05 RES -> optional
- #06 DC  -> D10 or any digital
- #07 CS  -> D9 or any digital
-*/
 
 #include <SPI.h>
 #include <Adafruit_GFX.h>
@@ -64,22 +25,18 @@ ST7789 240x320 2.0" IPS - only 4+2 wires required:
 #define NAVI_MID   6
 #define NAVI_SET   7
 #define NAVI_RST   8
-#include "ST7789_AVR.h"
-#define TFT_DC   10
-//#define TFT_CS    9  // with CS
-//#define TFT_RST  -1  // with CS
-#define TFT_CS  -1 // without CS
-#define TFT_RST  9 // without CS
 #endif
 
-#define SCR_WD 240
-#define SCR_HT 240
-ST7789_AVR lcd = ST7789_AVR(TFT_DC, TFT_RST, TFT_CS);
+#include "ST7789_AVR.h"
 
+#define SCR_WD ST7789_TFTWIDTH
+#define SCR_HT ST7789_TFTHEIGHT
+
+#error "uses gpio. don't have them on my system."
 
 void setup() 
 {
-  Serial.begin(9600);
+  Serial.begin(115200);
   pinMode(NAVI_UP,    INPUT_PULLUP);
   pinMode(NAVI_DOWN,  INPUT_PULLUP);
   pinMode(NAVI_LEFT,  INPUT_PULLUP);
@@ -121,4 +78,3 @@ void loop()
   c = digitalRead(NAVI_RST) ? RED : GREEN;
   lcd.fillRect(wd-40,ht-20, 40,20, c);
 }
-
