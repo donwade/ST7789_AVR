@@ -7,10 +7,6 @@
 //#include "wiring_private.h"
 #include <SPI.h>
 
-#ifndef FAKE_MISO_PIN
-  #define FAKE_MISO_PIN 0  // probably no one uses it.
-#endif
-
 void dprintf( const char *format, ...) {
     char buffer[200];
 	static bool bInit = false;
@@ -28,19 +24,32 @@ void dprintf( const char *format, ...) {
 }
 
 // hide the pinout so no one else can mess them up.
-#define TFT_MOSI   23   //GREEN data out
-#define TFT_CLK    18   // ORANGE
-#define TFT_DC     19   // BLUE     pass blinky
-#define TFT_CS     13   // YELLOW   pass blinky
-#define TFT_RST    5    // BROWN    pass blinky
-#define TFT_BLGT   25   // GREY     pass blinky
+#define TFT_MOSI   23   //GREEN   vspi classic
+#define TFT_MISO   19	// not used vspi classic
+#define TFT_CLK    18   // ORANGE vspi classic
+#define TFT_DC      4   // BLUE   user defined
+#define TFT_CS      5   // YELLOW vspi classic
+#define TFT_RST    13   // BROWN  user defined
+#define TFT_BLGT   25   // GREY   user defined  DAC1 brightness
 //
+
+#define XSTR(x) STR(x)
+#define STR(x) #x
+
+#pragma message "TFT_MOSI  = " XSTR(TFT_MOSI  )
+#pragma message "TFT_MISO  = " XSTR(TFT_MISO  )
+#pragma message "TFT_CLK   = " XSTR(TFT_CLK   )
+#pragma message "TFT_DC    = " XSTR(TFT_DC    )
+#pragma message "TFT_CS    = " XSTR(TFT_CS    )
+#pragma message "TFT_RST   = " XSTR(TFT_RST   )
+#pragma message "TFT_BLGT  = " XSTR(TFT_BLGT  )
+
 //==================================================
 //https://github.com/espressif/arduino-esp32/blob/master/libraries/SPI/examples/SPI_Multiple_Buses/SPI_Multiple_Buses.ino
 static const int spiClk = 1000000;  // 1 MHz
 
 // setup global LCD
-ST7789_AVR lcd = ST7789_AVR(TFT_DC, TFT_RST, TFT_CS, TFT_MOSI, TFT_CLK);
+ST7789_AVR lcd = ST7789_AVR(TFT_DC, TFT_RST, TFT_CS, TFT_MOSI, TFT_MISO, TFT_CLK);
 
 /*
 Changes:
@@ -319,12 +328,13 @@ void ST7789_AVR::writeData16(uint16_t d16)
 }
 
 // ----------------------------------------------------------
-ST7789_AVR::ST7789_AVR(int8_t dc, int8_t rst, int8_t cs, int8_t mosi, int8_t clk) : Adafruit_GFX(ST7789_TFTWIDTH, ST7789_TFTHEIGHT)
+ST7789_AVR::ST7789_AVR(int8_t dc, int8_t rst, int8_t cs, int8_t mosi, int8_t miso,  int8_t clk) : Adafruit_GFX(ST7789_TFTWIDTH, ST7789_TFTHEIGHT)
 {
   csPin = cs;
   dcPin = dc;
   rstPin = rst;
   mosiPin = mosi;
+  misoPin = miso;
   clkPin = clk;
 }
 // ----------------------------------------------------------
@@ -333,7 +343,7 @@ void ST7789_AVR::init(uint16_t wd, uint16_t ht)
 
   //SCLK, MISO, MOSI, SS
   hspi = new SPIClass(HSPI);
-  hspi->begin(clkPin  , FAKE_MISO_PIN, mosiPin,  csPin);  //miso = FAKE_MISO_PIN
+  hspi->begin(clkPin  , misoPin, mosiPin,  csPin);
   pinMode(hspi->pinSS(), OUTPUT);  //HSPI SS
 
   commonST7789Init(NULL);
