@@ -23,15 +23,46 @@ void dprintf( const char *format, ...) {
     Serial.print(buffer);
 }
 
+#define USE_VSPI_PINS 0
+#define USE_HSPI_PINS 1
+
 // hide the pinout so no one else can mess them up.
-#define TFT_MOSI   23   //GREEN   vspi classic
-#define TFT_MISO   19	// not used vspi classic
-#define TFT_CLK    18   // ORANGE vspi classic
-#define TFT_DC      4   // BLUE   user defined
-#define TFT_CS      5   // YELLOW vspi classic
-#define TFT_RST    13   // BROWN  user defined
-#define TFT_BLGT   25   // GREY   user defined  DAC1 brightness
+
+#define TFT_3v3 // purple
+#define TFT_GND // white
+#if USE_VSPI_PINS
+
+// CONFLICT with camera usage. DO NOT use if you run the camera
+
+	#pragma message ("USING VSPI PINOUT on HSPI core")
+
+    #define TFT_MOSI   23   //GREEN   vspi classic
+    #define TFT_MISO   19	// not used vspi classic
+    #define TFT_CLK    18   // ORANGE vspi classic
+    #define TFT_DC      4   // BLUE   user defined
+    #define TFT_CS      5   // YELLOW vspi classic
+    #define TFT_RST    13   // BROWN  user defined
+    #define TFT_BLGT   25   // GREY   user defined  DAC1 brightness
 //
+
+#elif USE_HSPI_PINS
+
+	// AVOID ALL CAMERA PINS
+	// AVOID ALL CAMERA PINS
+	// AVOID ALL CAMERA PINS
+	// AVOID ALL CAMERA PINS
+
+	#pragma message ("USING CLASSIC HSPI PINOUT on HSPI core")
+	#define TFT_MOSI   13   //GREEN   	hspi classic
+	#define TFT_MISO   -1	// not used hspi classic
+	#define TFT_CLK    14   // ORANGE 	hspi classic
+	#define TFT_DC     32   // BLUE     user defined
+	#define TFT_CS     33   // YELLOW 	hspi classic
+	#define TFT_RST    -1   // BROWN   cant find a pin
+	#define TFT_BLGT   -1   // GREY   user defined  DAC1 brightness
+#else
+	#error pick VSPI or HSPI
+#endif
 
 #define XSTR(x) STR(x)
 #define STR(x) #x
