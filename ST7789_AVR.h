@@ -80,6 +80,12 @@ class ST7789_AVR : public Adafruit_GFX {
   void setBrightness(uint8_t br);
   void powerSave(uint8_t mode);
 
+  void viewPort(int16_t window_x, int16_t window_y,
+            int16_t window_w, int16_t window_h,
+            int16_t source_x, int16_t source_y,
+            int16_t source_w, int16_t source_h,
+            uint16_t *img16);
+
   uint16_t Color565(uint8_t r, uint8_t g, uint8_t b);
   uint16_t color565(uint8_t r, uint8_t g, uint8_t b) { return Color565(r, g, b); }
   void rgbWheel(int idx, uint8_t *_r, uint8_t *_g, uint8_t *_b);
