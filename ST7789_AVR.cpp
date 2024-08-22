@@ -187,8 +187,8 @@ static const uint8_t init_240x240[] = {
 // -----------------------------------------
 
 static SPISettings spiSettings;
-#define SPI_START  hspi->beginTransaction(spiSettings)
-#define SPI_END    hspi->endTransaction()
+#define SPI_START  aSPI->beginTransaction(spiSettings)
+#define SPI_END    aSPI->endTransaction()
 
 // macros for fast DC and CS state changes
 #define DC_DATA     digitalWrite(dcPin, HIGH)
@@ -208,20 +208,20 @@ static SPISettings spiSettings;
 // in compatibility mode (SPI.transfer(c)) -> about 4 Mbps
 inline void ST7789_AVR::writeSPI(uint8_t c)
 {
-    hspi->transfer(c);
+    aSPI->transfer(c);
 }
 
 // ----------------------------------------------------------
 // fast method to send multiple 16-bit values via SPI
 inline void ST7789_AVR::writeMulti(uint16_t color, uint32_t num)
 {
-  while(num--) { hspi->transfer(color>>8);  hspi->transfer(color); }
+  while(num--) { aSPI->transfer(color>>8);  aSPI->transfer(color); }
 }
 // ----------------------------------------------------------
 // fast method to send multiple 16-bit values from RAM via SPI
 inline void ST7789_AVR::copyMulti(uint8_t *img, uint32_t num)
 {
-  while(num--) { hspi->transfer(*(img+1)); hspi->transfer(*(img+0)); img+=2; }
+  while(num--) { aSPI->transfer(*(img+1)); aSPI->transfer(*(img+0)); img+=2; }
 }
 // ----------------------------------------------------------
 void ST7789_AVR::writeCmd(uint8_t c)
@@ -283,9 +283,9 @@ void ST7789_AVR::init(uint16_t wd, uint16_t ht)
 {
 
   //SCLK, MISO, MOSI, SS
-  hspi = new SPIClass(HSPI);
-  hspi->begin(clkPin  , misoPin, mosiPin,  csPin);
-  pinMode(hspi->pinSS(), OUTPUT);  //HSPI SS
+  aSPI = new SPIClass(HSPI);
+  aSPI->begin(clkPin  , misoPin, mosiPin,  csPin);
+  pinMode(aSPI->pinSS(), OUTPUT);  //HSPI SS
 
   commonST7789Init(NULL);
 
@@ -352,7 +352,7 @@ void ST7789_AVR::commonST7789Init(const uint8_t *cmdList)
 #endif
 
   // on AVR ST7789 works correctly in MODE2 and MODE3 but for STM32 only MODE3 seems to be working
-  //hspi->begin();
+  //aSPI->begin();
 
   spiSettings = SPISettings(16000000, MSBFIRST, SPI_MODE3);  // 8000000 gives max speed on AVR 16MHz
 

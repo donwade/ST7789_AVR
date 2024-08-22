@@ -105,7 +105,7 @@ class ST7789_AVR : public Adafruit_GFX {
   uint8_t  csMask, dcMask;
 
   //uninitialised pointers to SPI objects
-  SPIClass *hspi = NULL;
+  SPIClass *aSPI = NULL;
 
   volatile uint8_t  *csPort, *dcPort;
 };
