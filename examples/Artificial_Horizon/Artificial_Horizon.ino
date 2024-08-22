@@ -21,7 +21,7 @@
 
 RREFont font;
 // needed for RREFont library initialization, define your fillRect
-void customRect(int x, int y, int w, int h, int c) { return lcd.fillRect(x, y, w, h, c); }
+void customRect(int x, int y, int w, int h, int c) { return lcd->fillRect(x, y, w, h, c); }
 
 #define FRAME_TIME 10 // in miliseconds, 10 ms = limit to max 100 fps
 
@@ -45,12 +45,12 @@ unsigned long drawStart = 0;
 void setup(void)
 {
   Serial.begin(115200);
-  lcd.init(SCR_WD,SCR_HT);
+  lcd->init(SCR_WD,SCR_HT);
   //lcd.setRotation(2);
   font.init(customRect, SCR_WD, SCR_HT); // custom fillRect function and screen width and height values
 
-  lcd.fillRect(0,        0, SCR_WD, SCR_HT/2, SKY_BLUE);
-  lcd.fillRect(0, SCR_HT/2, SCR_WD, SCR_HT/2, BROWN);
+  lcd->fillRect(0,        0, SCR_WD, SCR_HT/2, SKY_BLUE);
+  lcd->fillRect(0, SCR_HT/2, SCR_WD, SCR_HT/2, BROWN);
   //drawHorizon(0, 0);
 
   // Test roll and pitch
@@ -68,7 +68,7 @@ void loop()
   // Maximum pitch shouls be in range +/- 90 with HOR = 172
   int pitch = random (181) - 90;
   updateHorizon(roll, pitch);
-    
+
 // testRoll();
 }
 
@@ -147,26 +147,26 @@ void drawDiff(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color, ui
     if(x0>=0 && x0<SCR_HT ) {
       if(steep)  { // 46..90+44
         if(steep==lastSteep) {
-          if(y0>lastPos[x0]) lcd.drawFastHLine(lastPos[x0],x0, y0-lastPos[x0], ground); else
-          if(y0<lastPos[x0]) lcd.drawFastHLine(y0+lineWd,x0, lastPos[x0]-y0, sky);
+          if(y0>lastPos[x0]) lcd->drawFastHLine(lastPos[x0],x0, y0-lastPos[x0], ground); else
+          if(y0<lastPos[x0]) lcd->drawFastHLine(y0+lineWd,x0, lastPos[x0]-y0, sky);
         } else {
-          if(y0>lastPos2[x0]) lcd.drawFastHLine(lastPos2[x0],x0, y0-lastPos2[x0], ground); else
-          if(y0<lastPos2[x0]) lcd.drawFastHLine(y0+lineWd,x0, lastPos2[x0]-y0, sky);
+          if(y0>lastPos2[x0]) lcd->drawFastHLine(lastPos2[x0],x0, y0-lastPos2[x0], ground); else
+          if(y0<lastPos2[x0]) lcd->drawFastHLine(y0+lineWd,x0, lastPos2[x0]-y0, sky);
         }
-        lcd.drawFastHLine(y0, x0,lineWd, color);
+        lcd->drawFastHLine(y0, x0,lineWd, color);
         lastPos[x0]=y0;
       } else {
         if(steep==lastSteep) {
-          if(y0>lastPos[x0]) lcd.drawFastVLine(x0, lastPos[x0], y0-lastPos[x0], sky); else
-          if(y0<lastPos[x0]) lcd.drawFastVLine(x0, y0+lineWd, lastPos[x0]-y0, ground);
+          if(y0>lastPos[x0]) lcd->drawFastVLine(x0, lastPos[x0], y0-lastPos[x0], sky); else
+          if(y0<lastPos[x0]) lcd->drawFastVLine(x0, y0+lineWd, lastPos[x0]-y0, ground);
         } else {
-          if(y0>lastPos2[x0]) lcd.drawFastVLine(x0, lastPos2[x0], y0-lastPos2[x0], sky); else
-          if(y0<lastPos2[x0]) lcd.drawFastVLine(x0, y0+lineWd, lastPos2[x0]-y0, ground);
+          if(y0>lastPos2[x0]) lcd->drawFastVLine(x0, lastPos2[x0], y0-lastPos2[x0], sky); else
+          if(y0<lastPos2[x0]) lcd->drawFastVLine(x0, y0+lineWd, lastPos2[x0]-y0, ground);
         }
-        lcd.drawFastVLine(x0, y0,lineWd, color);
+        lcd->drawFastVLine(x0, y0,lineWd, color);
         lastPos[x0]=y0;
       }
-    } 
+    }
     err -= dy;
     if(err<0) { y0 += ys; err += dx; }
   }
@@ -187,17 +187,17 @@ void drawFull(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color, ui
 
   int16_t err = dx / 2;
   int16_t ystep = (y0<y1) ? 1 : -1;
-  
+
   for(; x0<=x1; x0++) {
     if(x0>=0 && x0<SCR_HT && y0>=0 && y0<SCR_WD ) {
       if(steep)  {
-        lcd.drawFastHLine(0,x0, y0, ground); 
-        lcd.drawFastHLine(y0+lineWd,x0, SCR_HT-y0-lineWd, sky);
-        lcd.drawFastHLine(y0, x0,lineWd, color);
+        lcd->drawFastHLine(0,x0, y0, ground);
+        lcd->drawFastHLine(y0+lineWd,x0, SCR_HT-y0-lineWd, sky);
+        lcd->drawFastHLine(y0, x0,lineWd, color);
       } else {
-        lcd.drawFastVLine(x0, 0, y0, sky); 
-        lcd.drawFastVLine(x0, y0+lineWd, SCR_HT-y0-lineWd, ground);
-        lcd.drawFastVLine(x0, y0,lineWd, color);
+        lcd->drawFastVLine(x0, 0, y0, sky);
+        lcd->drawFastVLine(x0, y0+lineWd, SCR_HT-y0-lineWd, ground);
+        lcd->drawFastVLine(x0, y0,lineWd, color);
       }
     }
     err -= dy;
@@ -237,22 +237,22 @@ void drawLines(void)
   int y0=YC;
 
   // Level wings graphic
-  lcd.fillRect(x0 - 1, y0 - 1, 3, 3, RED);
-  lcd.drawFastHLine(x0 - llh-6, y0, llh, RED);
-  lcd.drawFastHLine(x0 + 6, y0, llh, RED);
-  lcd.drawFastVLine(x0 - 6, y0, 6, RED);
-  lcd.drawFastVLine(x0 + 6, y0, 6, RED);
+  lcd->fillRect(x0 - 1, y0 - 1, 3, 3, RED);
+  lcd->drawFastHLine(x0 - llh-6, y0, llh, RED);
+  lcd->drawFastHLine(x0 + 6, y0, llh, RED);
+  lcd->drawFastVLine(x0 - 6, y0, 6, RED);
+  lcd->drawFastVLine(x0 + 6, y0, 6, RED);
 
   // Pitch scale
-  lcd.drawFastHLine(x0 - llh,   y0 - dy*4, ll, WHITE);
-  lcd.drawFastHLine(x0 - lsh,   y0 - dy*3, ls, WHITE);
-  lcd.drawFastHLine(x0 - llh,   y0 - dy*2, ll, WHITE);
-  lcd.drawFastHLine(x0 - lsh,   y0 - dy*1, ls, WHITE);
+  lcd->drawFastHLine(x0 - llh,   y0 - dy*4, ll, WHITE);
+  lcd->drawFastHLine(x0 - lsh,   y0 - dy*3, ls, WHITE);
+  lcd->drawFastHLine(x0 - llh,   y0 - dy*2, ll, WHITE);
+  lcd->drawFastHLine(x0 - lsh,   y0 - dy*1, ls, WHITE);
 
-  lcd.drawFastHLine(x0 - lsh,   y0 + dy*1, ls, WHITE);
-  lcd.drawFastHLine(x0 - llh,   y0 + dy*2, ll, WHITE);
-  lcd.drawFastHLine(x0 - lsh,   y0 + dy*3, ls, WHITE);
-  lcd.drawFastHLine(x0 - llh,   y0 + dy*4, ll, WHITE);
+  lcd->drawFastHLine(x0 - lsh,   y0 + dy*1, ls, WHITE);
+  lcd->drawFastHLine(x0 - llh,   y0 + dy*2, ll, WHITE);
+  lcd->drawFastHLine(x0 - lsh,   y0 + dy*3, ls, WHITE);
+  lcd->drawFastHLine(x0 - llh,   y0 + dy*4, ll, WHITE);
 }
 
 void drawLabels(void)
@@ -268,7 +268,7 @@ void drawLabels(void)
   font.printStr(x0+ll/2+4,     y0 - dy*3-7, "60");
   font.printStr(x0-ll/2-6*4-2, y0 - dy*2-7, "40");
   font.printStr(x0+ll/2+4,     y0 - dy*1-7, "20");
-  
+
   font.printStr(x0+ll/2+4,     y0 + dy*1-7, "20");
   font.printStr(x0-ll/2-6*4-2, y0 + dy*2-7, "40");
   font.printStr(x0+ll/2+4,     y0 + dy*3-7, "60");
@@ -290,11 +290,11 @@ void drawFPS(void)
     fps=fpsAvg/fpsCnt;
     fpsAvg=fpsCnt=0;
   }
-  lcd.fillRect(x, y,           12*2+2*fpsFr, fpsFr, fpsBg);
-  lcd.fillRect(x, y+7*2+fpsFr, 12*2+2*fpsFr, fpsFr, fpsBg);
-  lcd.fillRect(x,            y+fpsFr, fpsFr, 7*2, fpsBg);
-  lcd.fillRect(x+12*2+fpsFr, y+fpsFr, fpsFr, 7*2, fpsBg);
-  lcd.fillRect(x+5*2+fpsFr,  y+fpsFr,     4, 7*2, fpsBg);
+  lcd->fillRect(x, y,           12*2+2*fpsFr, fpsFr, fpsBg);
+  lcd->fillRect(x, y+7*2+fpsFr, 12*2+2*fpsFr, fpsFr, fpsBg);
+  lcd->fillRect(x,            y+fpsFr, fpsFr, 7*2, fpsBg);
+  lcd->fillRect(x+12*2+fpsFr, y+fpsFr, fpsFr, 7*2, fpsBg);
+  lcd->fillRect(x+5*2+fpsFr,  y+fpsFr,     4, 7*2, fpsBg);
   char buf[6];
   snprintf(buf,5,"%02d",fps>99 ? 99 : fps);
   font.setFont(&rre_digitssimple5x7);
@@ -367,4 +367,4 @@ void testPitch(void)
   for (int p = -85; p < 85; p++) updateHorizon(0, p);
   for (int p =  85; p >  0; p--) updateHorizon(0, p);
 }
- 
+

@@ -88,7 +88,7 @@ void imgLineH(int x, int y, int w)
     line[i+2] = palette[(v>>2)&3];
     line[i+3] = palette[v&3];
   }
-  lcd.drawImage(x,y,w,1,line+(x&3));
+  lcd->drawImage(x,y,w,1,line+(x&3));
   #ifdef SLOW_DRAW
     delay(10);
   #endif
@@ -161,7 +161,7 @@ void imgTriangle(int16_t x1,int16_t y1,int16_t x2,int16_t y2,int16_t x3,int16_t 
     if(maxx<t1x) maxx=t1x; if(maxx<t2x) maxx=t2x;
 
     // line from min to max points found on the y
-    if(c) lcd.drawFastHLine(minx, y, maxx-minx, c); else imgLineH(minx, y, maxx-minx);
+    if(c) lcd->drawFastHLine(minx, y, maxx-minx, c); else imgLineH(minx, y, maxx-minx);
     // increase y
     if(!changed1) t1x += signx1;
     t1x+=t1xp;
@@ -214,7 +214,7 @@ void imgTriangle(int16_t x1,int16_t y1,int16_t x2,int16_t y2,int16_t x3,int16_t 
     if(minx>t1x) minx=t1x; if(minx>t2x) minx=t2x;
     if(maxx<t1x) maxx=t1x; if(maxx<t2x) maxx=t2x;
     // line from min to max points found on the y
-    if(c) lcd.drawFastHLine(minx, y, maxx-minx, c); else imgLineH(minx, y, maxx-minx);
+    if(c) lcd->drawFastHLine(minx, y, maxx-minx, c); else imgLineH(minx, y, maxx-minx);
     // increase y
     if(!changed1) t1x += signx1;
     t1x+=t1xp;
@@ -346,7 +346,7 @@ void clockUpdate()
     drawHandS(sDeg,sHandW,sHandL,sHandCol1,sHandCol2);
   sDegOld = sDeg;
 
-  lcd.fillCircle(cx,cy, 4, RGBto565(40,40,40));
+  lcd->fillCircle(cx,cy, 4, RGBto565(40,40,40));
 /*
   lcd.setTextSize(3); lcd.setTextColor(WHITE,BLACK);
   lcd.setCursor(0,0);
@@ -419,16 +419,16 @@ void setBuildTime()
 #define BIT_IMAGE_WD 240
 #define BIT_IMAGE_HT 240
 
-void setup()
+void ST7789_AVR *lcd = new ST7789_AVR(TFT_DC, TFT_RST, TFT_CS, TFT_MOSI, TFT_MISO, TFT_CLK); \n setup()
 {
   Serial.begin(9600);
   pinMode(BUTTON, INPUT_PULLUP);
   Wire.begin();
   Wire.setClock(400000);  // faster
 
-  lcd.init(SCR_WD, SCR_HT);
-  lcd.fillScreen(RED);
-  lcd.clearScreen();
+  lcd->init(SCR_WD, SCR_HT);
+  lcd->fillScreen(RED);
+  lcd->clearScreen();
 
   //getRTCDateTime(&cur);
   if(cur.year+2000<2020) setBuildTime();  //  <2020 - invalid year

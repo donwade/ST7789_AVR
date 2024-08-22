@@ -17,13 +17,14 @@
 RREFont font;
 
 // needed for RREFont library initialization, define your fillRect
-void customRect(int x, int y, int w, int h, int c) { return lcd.fillRect(x, y, w, h, c); }
+void customRect(int x, int y, int w, int h, int c) { return lcd->fillRect(x, y, w, h, c); }
 
-void setup() 
+void ST7789_AVR *lcd = new ST7789_AVR(TFT_DC, TFT_RST, TFT_CS, TFT_MOSI, TFT_MISO, TFT_CLK);
+void  setup()
 {
   Serial.begin(115200);
-  lcd.init();
-  lcd.fillScreen(BLACK);
+  lcd->init();
+  lcd->fillScreen(BLACK);
 
   font.init(customRect, SCR_WD, SCR_HT); // custom fillRect function and screen width and height values
   font.setFont(&rre_chicago_20x24);
@@ -36,13 +37,13 @@ void setup()
   font.printStr(30+i,20+i,"Hello");
 
   for(i=0;i<10;i++) {
-    font.setColor(lcd.rgbWheel(0+i*8));
+    font.setColor(lcd->rgbWheel(0+i*8));
     font.printStr(25+i,60+i,"World");
   }
   font.setColor(WHITE);
   font.printStr(25+i,60+i,"World");
   delay(4000);
-  lcd.fillScreen();
+  lcd->fillScreen();
 }
 
 #define MAX_TXT 32

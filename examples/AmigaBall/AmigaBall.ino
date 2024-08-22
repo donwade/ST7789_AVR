@@ -92,34 +92,35 @@ void drawBall(int x, int y)
     int bx=x-2,bw=BALL_WD+SHADOW+2+2; // 2 pixels are safe enough
     if(bx<0) bx=0;
     if(bx+bw>SCR_WD) bw=SCR_WD-bx;
-    lcd.drawImage(bx,yy,bw,1,line+bx); // optimized part line copy
+    lcd->drawImage(bx,yy,bw,1,line+bx); // optimized part line copy
   }
 }
 
+void ST7789_AVR *lcd = new ST7789_AVR(TFT_DC, TFT_RST, TFT_CS, TFT_MOSI, TFT_MISO, TFT_CLK);
 void setup()
 {
   Serial.begin(115200);
-  lcd.init(SCR_WD,SCR_HT);
+  lcd->init(SCR_WD,SCR_HT);
   //lcd.setRotation(2);
-  lcd.fillScreen(bgCol);
+  lcd->fillScreen(bgCol);
   //lcd.invertDisplay(0);
   //lcd.idleDisplay(0);
 
   int i,o,numl=(SCR_HT==320?12:SCR_HT==240?8:10);
   uint16_t *pal = (uint16_t*)ball+3;
   for(i=0;i<16;i++) palette[i] = pgm_read_word(&pal[i]);
-  for(i=0;i<10;i++) lcd.drawFastVLine(LINE_XS1+i*SP, LINE_YS, numl*SP, lineCol);
-  for(i=0;i<=numl;i++) lcd.drawFastHLine(LINE_XS1, LINE_YS+i*SP, SCR_WD-LINE_XS1*2, lineCol);
-  lcd.drawFastHLine(LINE_XS2,SCR_HT-LINE_YS, SCR_WD-LINE_XS2*2, lineCol);
+  for(i=0;i<10;i++) lcd->drawFastVLine(LINE_XS1+i*SP, LINE_YS, numl*SP, lineCol);
+  for(i=0;i<=numl;i++) lcd->drawFastHLine(LINE_XS1, LINE_YS+i*SP, SCR_WD-LINE_XS1*2, lineCol);
+  lcd->drawFastHLine(LINE_XS2,SCR_HT-LINE_YS, SCR_WD-LINE_XS2*2, lineCol);
   int dy=SCR_HT-LINE_YS-(LINE_YS+SP*numl);
   int dx=LINE_XS1-LINE_XS2;
   o=2*7*dx/dy;
-  lcd.drawFastHLine(LINE_XS2+o,SCR_HT-LINE_YS-7*2, SCR_WD-LINE_XS2*2-o*2, lineCol);
+  lcd->drawFastHLine(LINE_XS2+o,SCR_HT-LINE_YS-7*2, SCR_WD-LINE_XS2*2-o*2, lineCol);
   o=2*(7+6)*dx/dy;
-  lcd.drawFastHLine(LINE_XS2+o,SCR_HT-LINE_YS-(7+6)*2, SCR_WD-LINE_XS2*2-o*2, lineCol);
+  lcd->drawFastHLine(LINE_XS2+o,SCR_HT-LINE_YS-(7+6)*2, SCR_WD-LINE_XS2*2-o*2, lineCol);
   o=2*(7+6+4)*dx/dy;
-  lcd.drawFastHLine(LINE_XS2+o,SCR_HT-LINE_YS-(7+6+4)*2, SCR_WD-LINE_XS2*2-o*2, lineCol);
-  for(i=0;i<10;i++) lcd.drawLine(LINE_XS1+i*SP, LINE_YS+SP*numl, LINE_XS2+i*(SCR_WD-LINE_XS2*2)/9, SCR_HT-LINE_YS, lineCol);
+  lcd->drawFastHLine(LINE_XS2+o,SCR_HT-LINE_YS-(7+6+4)*2, SCR_WD-LINE_XS2*2-o*2, lineCol);
+  for(i=0;i<10;i++) lcd->drawLine(LINE_XS1+i*SP, LINE_YS+SP*numl, LINE_XS2+i*(SCR_WD-LINE_XS2*2)/9, SCR_HT-LINE_YS, lineCol);
   //delay(10000);
 }
 

@@ -8,11 +8,15 @@
 
 #define SCR_WD ST7789_TFTWIDTH
 #define SCR_HT ST7789_TFTHEIGHT
+
+ST7789_AVR *lcd = new ST7789_AVR(TFT_DC, TFT_RST, TFT_CS, TFT_MOSI, TFT_MISO, TFT_CLK);
+
 void setup()
 {
+
   Serial.begin(9600);
-  lcd.init();
-  lcd.fillScreen(BLACK);
+  lcd->init();
+  lcd->fillScreen(BLACK);
 /*
   for(int i=0;i<128;i++) {
     lcd.fillRect(32*0,i,32,1,RGBto565(i*2,0,0));
@@ -29,8 +33,8 @@ void circles()
   int x,y;
   x = 15+random(SCR_WD-30);
   y = 15+random(SCR_HT-30);
-  lcd.fillCircle(x,y,15,random());
-  lcd.drawCircle(x,y,16,YELLOW);
+  lcd->fillCircle(x,y,15,random());
+  lcd->drawCircle(x,y,16,YELLOW);
 }
 
 #define MAX_LINES 16
@@ -62,21 +66,21 @@ void animLines(int mode)
   if(ay1>SCR_HT-1) { dy1=-dy1; ay1=SCR_HT-1; }
   if(ay1<1) { dy1=-dy1; ay1=0; }
   int i=curLine;
-  if(mode&1) lcd.drawLine(lx0[i],ly0[i],lx1[i],ly1[i], 0);
-  if(mode&2) lcd.drawLine(SCR_WD-1-lx0[i],ly0[i],SCR_WD-1-lx1[i],ly1[i],0);
-  if(mode&4) lcd.drawLine(lx0[i],SCR_HT-1-ly0[i],lx1[i],SCR_HT-1-ly1[i],0);
-  if(mode&8) lcd.drawLine(SCR_WD-1-lx0[i],SCR_HT-1-ly0[i],SCR_WD-1-lx1[i],SCR_HT-1-ly1[i],0);
+  if(mode&1) lcd->drawLine(lx0[i],ly0[i],lx1[i],ly1[i], 0);
+  if(mode&2) lcd->drawLine(SCR_WD-1-lx0[i],ly0[i],SCR_WD-1-lx1[i],ly1[i],0);
+  if(mode&4) lcd->drawLine(lx0[i],SCR_HT-1-ly0[i],lx1[i],SCR_HT-1-ly1[i],0);
+  if(mode&8) lcd->drawLine(SCR_WD-1-lx0[i],SCR_HT-1-ly0[i],SCR_WD-1-lx1[i],SCR_HT-1-ly1[i],0);
   lx0[curLine]=ax0;
   lx1[curLine]=x1;
   ly0[curLine]=ay0;
   ly1[curLine]=ay1;
   if(++curLine>=numLines) curLine=0;
   for(int i=0;i<numLines;i++) {
-    c = lcd.rgbWheel(cc+i*25);
-    if(mode&1) lcd.drawLine(lx0[i],ly0[i],lx1[i],ly1[i], c);
-    if(mode&2) lcd.drawLine(SCR_WD-1-lx0[i],ly0[i],SCR_WD-1-lx1[i],ly1[i],c);
-    if(mode&4) lcd.drawLine(lx0[i],SCR_HT-1-ly0[i],lx1[i],SCR_HT-1-ly1[i],c);
-    if(mode&8) lcd.drawLine(SCR_WD-1-lx0[i],SCR_HT-1-ly0[i],SCR_WD-1-lx1[i],SCR_HT-1-ly1[i],c);
+    c = lcd->rgbWheel(cc+i*25);
+    if(mode&1) lcd->drawLine(lx0[i],ly0[i],lx1[i],ly1[i], c);
+    if(mode&2) lcd->drawLine(SCR_WD-1-lx0[i],ly0[i],SCR_WD-1-lx1[i],ly1[i],c);
+    if(mode&4) lcd->drawLine(lx0[i],SCR_HT-1-ly0[i],lx1[i],SCR_HT-1-ly1[i],c);
+    if(mode&8) lcd->drawLine(SCR_WD-1-lx0[i],SCR_HT-1-ly0[i],SCR_WD-1-lx1[i],SCR_HT-1-ly1[i],c);
     cc+=1;
   }
 }
@@ -89,17 +93,17 @@ void loop()
   //tm = millis();
   //while(millis()-tm<demoTime) circles();
 
-  lcd.fillScreen();
+  lcd->fillScreen();
   numLines=16;
   tm = millis();
   while(millis()-tm<demoTime) animLines(1);
 
-  lcd.fillScreen();
+  lcd->fillScreen();
   numLines=6;
   tm = millis();
   while(millis()-tm<demoTime) animLines(3);
 
-  lcd.fillScreen();
+  lcd->fillScreen();
   numLines=4;
   tm = millis();
   while(millis()-tm<demoTime) animLines(15);

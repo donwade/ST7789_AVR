@@ -28,7 +28,7 @@
 
 RREFont font;
 // needed for RREFont library initialization, define your fillRect
-void customRect(int x, int y, int w, int h, int c) { return lcd.fillRect(x, y, w, h, c); }
+void customRect(int x, int y, int w, int h, int c) { return lcd->fillRect(x, y, w, h, c); }
 
 #else
 
@@ -39,8 +39,8 @@ void customRect(int x, int y, int w, int h, int c) { return lcd.fillRect(x, y, w
 PropFont font;
 
 // needed for PropFont library initialization, define your drawPixel and fillRect
-void customPixel(int x, int y, int c) { lcd.drawPixel(x, y, c); }
-void customRect(int x, int y, int w, int h, int c) { lcd.fillRect(x, y, w, h, c); }
+void customPixel(int x, int y, int c) { lcd->drawPixel(x, y, c); }
+void customRect(int x, int y, int w, int h, int c) { lcd->fillRect(x, y, w, h, c); }
 #endif
 
 //-----------------------------------------------------------------------------
@@ -51,10 +51,12 @@ unsigned long ms = 0;
 #define SCR_HT ST7789_TFTHEIGHT
 
 
+void ST7789_AVR *lcd = new ST7789_AVR(TFT_DC, TFT_RST, TFT_CS, TFT_MOSI, TFT_MISO, TFT_CLK);
+
 void setup()
 {
   Serial.begin(115200);
-  lcd.init(SCR_WD, SCR_HT);
+  lcd->init(SCR_WD, SCR_HT);
 #if USE_RRE_FONTS==1
   font.init(customRect, SCR_WD, SCR_HT); // custom fillRect function and screen width and height values
 #else
@@ -100,7 +102,7 @@ void setInfoFont()
 
 void drawField(int x, int y, int w, int h, char *label, uint16_t col=lnCol)
 {
-  lcd.drawRect(x,y+7,w,h-7,col);
+  lcd->drawRect(x,y+7,w,h-7,col);
   setInfoFont();
   font.setScale(1);
   font.setColor(labCol,BLACK);
@@ -162,7 +164,7 @@ void loop()
   delay (1000);
   if(mode!=lastMode) {
     lastMode=mode;
-    lcd.fillScreen(BLACK);
+    lcd->fillScreen(BLACK);
     constData();
   }
 

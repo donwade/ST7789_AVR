@@ -12,28 +12,28 @@ void setup(void)
 {
   Serial.begin(115200);
 
-  lcd.init(SCR_WD, SCR_HT);
-  lcd.clearScreen();
+  lcd->init(SCR_WD, SCR_HT);
+  lcd->clearScreen();
 
-  lcd.fillScreen(RED);
-  lcd.enableDisplay(true);
+  lcd->fillScreen(RED);
+  lcd->enableDisplay(true);
   printf("%s %d\n", __FUNCTION__, __LINE__);
   delay(5000);
 
-  lcd.setCursor(0, 0);
+  lcd->setCursor(0, 0);
   printf("%s %d\n", __FUNCTION__, __LINE__);
-  lcd.setTextColor(WHITE,BLUE);
+  lcd->setTextColor(WHITE,BLUE);
   printf("%s %d\n", __FUNCTION__, __LINE__);
-  lcd.setTextSize(3);
+  lcd->setTextSize(3);
   printf("%s %d\n", __FUNCTION__, __LINE__);
 
-  lcd.powerSave(2);
-  lcd.enableDisplay(true);
+  lcd->powerSave(2);
+  lcd->enableDisplay(true);
  }
 
 void loop()
 {
     static unsigned long cnt;
-    lcd.println(cnt++); // using Adafruit default font
+    lcd->println(cnt++); // using Adafruit default font
 }
 

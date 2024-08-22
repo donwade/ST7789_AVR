@@ -40,7 +40,7 @@ int scrollCharRRE(unsigned char c)
     ms = millis();
     yscr += scrollStep;
     if(yscr>=maxy) yscr-=maxy;
-    lcd.setScroll(yscr);
+    lcd->setScroll(yscr);
     ycnt=yscr+ST7789_RAMHEIGHT;
     if(ycnt>=maxy) ycnt-=maxy;
     //Serial.println(String("ycnt=")+ycnt);
@@ -50,7 +50,7 @@ int scrollCharRRE(unsigned char c)
     int wd;
     if(col>=chWd) { // draw empty column (spacing)
       wd = sy*rFont->ht;
-      lcd.fillRect(scrWOffs-offsY-wd, lineY, wd, sx, bg);
+      lcd->fillRect(scrWOffs-offsY-wd, lineY, wd, sx, bg);
       while(millis()-ms<scrollDelay);
       continue;
     }
@@ -62,11 +62,11 @@ int scrollCharRRE(unsigned char c)
       hf = pgm_read_byte(rFont->rects+idx+2);
       if(yf>0) { // bg line top
         wd = (yf-ybg)*sy;
-        lcd.fillRect(scrWOffs-(offsY+ybg*sy)-wd, lineY, wd, sx, bg);
+        lcd->fillRect(scrWOffs-(offsY+ybg*sy)-wd, lineY, wd, sx, bg);
       }
       ybg = yf+hf;
       wd = hf*sy;
-      lcd.fillRect(scrWOffs-(offsY+yf*sy)-wd, lineY, wd, sx, fg);
+      lcd->fillRect(scrWOffs-(offsY+yf*sy)-wd, lineY, wd, sx, fg);
       idx+=3;
       xf = pgm_read_byte(rFont->rects+idx+0);
     }
@@ -74,7 +74,7 @@ int scrollCharRRE(unsigned char c)
 
     if(ybg<rFont->ht-1) { // last bg line
       wd = (rFont->ht-ybg)*sy;
-      lcd.fillRect(scrWOffs-(offsY+ybg*sy)-wd, lineY, wd, sx, bg);
+      lcd->fillRect(scrWOffs-(offsY+ybg*sy)-wd, lineY, wd, sx, bg);
     }
     while(millis()-ms<scrollDelay);
   }
@@ -84,7 +84,7 @@ void scrollString(char *c)
 {
   while(*c) {
     uint8_t r,g,b;
-    lcd.rgbWheel(cnt*32, &r, &g ,&b);
+    lcd->rgbWheel(cnt*32, &r, &g ,&b);
     fg = RGBto565(r,g,b);
     bg = cnt&1 ? RGBto565(40,40,40) : RGBto565(20,20,20);
     cnt++;
@@ -92,12 +92,13 @@ void scrollString(char *c)
   }
 }
 
+void ST7789_AVR *lcd = new ST7789_AVR(TFT_DC, TFT_RST, TFT_CS, TFT_MOSI, TFT_MISO, TFT_CLK);
 void setup()
 {
   Serial.begin(9600);
-  lcd.init();
-  lcd.fillScreen(BLACK);
-  lcd.setScrollArea(0,0);
+  lcd->init();
+  lcd->fillScreen(BLACK);
+  lcd->setScrollArea(0,0);
 }
 
 void loop()

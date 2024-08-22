@@ -1,7 +1,7 @@
 // ST7789 library example
 // 5-way navi switch example
 // (c) 2019 Pawel A. Hernik
-// https://youtu.be/EO7pfz1KjJM 
+// https://youtu.be/EO7pfz1KjJM
 
 
 #include <SPI.h>
@@ -34,7 +34,8 @@
 
 #error "uses gpio. don't have them on my system."
 
-void setup() 
+void ST7789_AVR *lcd = new ST7789_AVR(TFT_DC, TFT_RST, TFT_CS, TFT_MOSI, TFT_MISO, TFT_CLK);
+void setup()
 {
   Serial.begin(115200);
   pinMode(NAVI_UP,    INPUT_PULLUP);
@@ -44,37 +45,37 @@ void setup()
   pinMode(NAVI_MID,   INPUT_PULLUP);
   pinMode(NAVI_SET,   INPUT_PULLUP);
   pinMode(NAVI_RST,   INPUT_PULLUP);
-  lcd.init();
-  lcd.fillScreen();
+  lcd->init();
+  lcd->fillScreen();
 }
 
-void loop() 
+void loop()
 {
   int wd=240,ht=240,rec=50,trih=40,triw=50;
   int wd2=wd/2,ht2=ht/2,rec2=rec/2;
 
   uint16_t c = digitalRead(NAVI_UP) ? RED : GREEN;
-  lcd.fillTriangle(wd2,0, wd2-triw,trih, wd2+50,trih, c);
-  lcd.fillRect(wd2-rec2,trih, rec,rec, c);
+  lcd->fillTriangle(wd2,0, wd2-triw,trih, wd2+50,trih, c);
+  lcd->fillRect(wd2-rec2,trih, rec,rec, c);
 
   c = digitalRead(NAVI_DOWN) ? RED : GREEN;
-  lcd.fillTriangle(wd2,ht-0, wd2-triw,ht-trih, wd2+triw,ht-trih, c);
-  lcd.fillRect(wd2-rec2,ht-trih-rec, rec,rec, c);
+  lcd->fillTriangle(wd2,ht-0, wd2-triw,ht-trih, wd2+triw,ht-trih, c);
+  lcd->fillRect(wd2-rec2,ht-trih-rec, rec,rec, c);
 
   c = digitalRead(NAVI_LEFT) ? RED : GREEN;
-  lcd.fillTriangle(0,ht2, trih,ht2-triw, trih,ht2+triw, c);
-  lcd.fillRect(trih,ht2-rec2, rec,rec, c);
+  lcd->fillTriangle(0,ht2, trih,ht2-triw, trih,ht2+triw, c);
+  lcd->fillRect(trih,ht2-rec2, rec,rec, c);
 
   c = digitalRead(NAVI_RIGHT) ? RED : GREEN;
-  lcd.fillTriangle(wd-0,ht2, wd-trih,ht2-triw, wd-triw,ht2+triw, c);
-  lcd.fillRect(wd-trih-rec,ht2-rec2, rec,rec, c);
+  lcd->fillTriangle(wd-0,ht2, wd-trih,ht2-triw, wd-triw,ht2+triw, c);
+  lcd->fillRect(wd-trih-rec,ht2-rec2, rec,rec, c);
 
   c = digitalRead(NAVI_MID) ? RED : GREEN;
-  lcd.fillRect(wd2-rec2,ht2-rec2, rec,rec, c);
+  lcd->fillRect(wd2-rec2,ht2-rec2, rec,rec, c);
 
   c = digitalRead(NAVI_SET) ? RED : GREEN;
-  lcd.fillRect(0,ht-20, 40,20, c);
+  lcd->fillRect(0,ht-20, 40,20, c);
 
   c = digitalRead(NAVI_RST) ? RED : GREEN;
-  lcd.fillRect(wd-40,ht-20, 40,20, c);
+  lcd->fillRect(wd-40,ht-20, 40,20, c);
 }

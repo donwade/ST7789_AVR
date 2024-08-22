@@ -20,14 +20,14 @@
 RREFont font;
 
 // needed for RREFont library initialization, define your fillRect
-void customRect(int x, int y, int w, int h, int c) { return lcd.fillRect(x, y, w, h, c); }
+void customRect(int x, int y, int w, int h, int c) { return lcd->fillRect(x, y, w, h, c); }
 
 void rainbow()
 {
   for(int i=0;i<240;i+=4) {
     uint8_t r,g,b;
-    lcd.rgbWheel(i*512L/240,&r,&g,&b);
-    lcd.fillRect(0,i,240,4,RGBto565(r,g,b));
+    lcd->rgbWheel(i*512L/240,&r,&g,&b);
+    lcd->fillRect(0,i,240,4,RGBto565(r,g,b));
   }
 }
 
@@ -37,7 +37,7 @@ void rainbow()
 
 enum wdt_time {
   SLEEP_15MS,
-  SLEEP_30MS, 
+  SLEEP_30MS,
   SLEEP_60MS,
   SLEEP_120MS,
   SLEEP_250MS,
@@ -56,7 +56,7 @@ void powerDown(uint8_t per)
   ADCSRA &= ~(1 << ADEN);  // turn off ADC
   if(per != SLEEP_FOREVER) { // use watchdog timer
     wdt_enable(per);
-    WDTCSR |= (1 << WDIE);  
+    WDTCSR |= (1 << WDIE);
   }
   set_sleep_mode(SLEEP_MODE_PWR_DOWN);  // most power saving
   cli();
@@ -67,7 +67,7 @@ void powerDown(uint8_t per)
   // ... sleeping here
   sleep_disable();
   ADCSRA |= (1 << ADEN); // turn on ADC
-} 
+}
 
 void wait(int t=SLEEP_4S)
 {
@@ -78,13 +78,15 @@ void wait(int t=SLEEP_4S)
   //SPI.begin();
   //SPI.setClockDivider(SPI_CLOCK_DIV2);
   //SPI.setDataMode(SPI_MODE3);
-  lcd.init(SCR_WD, SCR_HT);
+  lcd->init(SCR_WD, SCR_HT);
 }
 
-void setup() 
+void ST7789_AVR *lcd = new ST7789_AVR(TFT_DC, TFT_RST, TFT_CS, TFT_MOSI, TFT_MISO, TFT_CLK);
+
+void setup()
 {
   Serial.begin(9600);
-  lcd.init();
+  lcd->init();
   font.init(customRect, SCR_WD, SCR_HT); // custom fillRect function and screen width and height values
   font.setFont(&rre_chicago_20x24);
   font.setScale(1,2); font.setSpacing(3);
@@ -96,7 +98,7 @@ void setup()
 
 void loop()
 {
-  lcd.fillScreen(RGBto565(120,60,30));
+  lcd->fillScreen(RGBto565(120,60,30));
   font.printStr(ALIGN_CENTER,40,"Power");
   font.printStr(ALIGN_CENTER,40+60,"consumption");
   font.printStr(ALIGN_CENTER,40+120,"tests ...");
@@ -109,7 +111,7 @@ void loop()
   SPI.end();
   pinMode(13, OUTPUT);  digitalWrite(13, LOW);
   delay(4000);
-  lcd.init(SCR_WD, SCR_HT);
+  lcd->init(SCR_WD, SCR_HT);
 
   rainbow();
   font.setColor(BLACK);
@@ -121,78 +123,78 @@ void loop()
   wait();
   digitalWrite(TFT_BL, HIGH); // on
 
-  lcd.fillScreen(WHITE);
+  lcd->fillScreen(WHITE);
   wait();
-  lcd.fillScreen(BLACK);
+  lcd->fillScreen(BLACK);
   wait();
-  lcd.fillScreen(RED);
+  lcd->fillScreen(RED);
   wait();
-  lcd.fillScreen(GREEN);
+  lcd->fillScreen(GREEN);
   wait();
-  lcd.fillScreen(BLUE);
+  lcd->fillScreen(BLUE);
   wait();
 
   rainbow();
   font.setColor(BLACK);
   font.printStr(ALIGN_CENTER,95,"Idle mode OFF");
-  lcd.idleDisplay(false);
+  lcd->idleDisplay(false);
   wait();
 
   rainbow();
   font.printStr(ALIGN_CENTER,95,"Idle mode ON");
-  lcd.idleDisplay(true);
+  lcd->idleDisplay(true);
   wait();
-  lcd.idleDisplay(false);
+  lcd->idleDisplay(false);
 
   rainbow();
   font.setColor(WHITE,BLACK);
-  lcd.fillRect(30,87,240-60,60,BLACK);
+  lcd->fillRect(30,87,240-60,60,BLACK);
   font.printStr(ALIGN_CENTER,95,"Invert OFF");
-  lcd.invertDisplay(false);
+  lcd->invertDisplay(false);
   wait();
   font.printStr(ALIGN_CENTER,95," Invert ON ");
-  lcd.invertDisplay(true);
+  lcd->invertDisplay(true);
   wait();
-  lcd.invertDisplay(false);
+  lcd->invertDisplay(false);
 
   font.setColor(WHITE);
-  lcd.fillScreen(RGBto565(180,0,180));
+  lcd->fillScreen(RGBto565(180,0,180));
   font.printStr(ALIGN_CENTER,40,"Sleep mode in 2s");
   font.printStr(ALIGN_CENTER,40+60,"1. BL ON ");
   font.printStr(ALIGN_CENTER,40+120,"2. BL OFF");
   wait(SLEEP_2S);
-  //lcd.enableDisplay(false); 
-  lcd.sleepDisplay(true);
+  //lcd.enableDisplay(false);
+  lcd->sleepDisplay(true);
   wait();
-  lcd.sleepDisplay(true);
+  lcd->sleepDisplay(true);
   digitalWrite(TFT_BL, LOW);
   wait();
   digitalWrite(TFT_BL, HIGH);
-  lcd.sleepDisplay(false); 
+  lcd->sleepDisplay(false);
   //lcd.enableDisplay(true);
 
-  lcd.fillScreen(RGBto565(180,0,180));
+  lcd->fillScreen(RGBto565(180,0,180));
   font.printStr(6,10,"Display disable");
   font.printStr(6,10+60,"1. BL ON");
   font.printStr(6,10+120,"2. BL OFF");
   font.printStr(6,10+180,"3. BL OFF + Sleep");
   wait(SLEEP_2S);
 
-  lcd.enableDisplay(false);   // display disable, BL ON
+  lcd->enableDisplay(false);   // display disable, BL ON
   wait();
 
-  lcd.enableDisplay(false);
+  lcd->enableDisplay(false);
   digitalWrite(TFT_BL, LOW);    // display disable, BL OFF
   wait();
-  lcd.enableDisplay(false);
-  lcd.sleepDisplay(true); 
+  lcd->enableDisplay(false);
+  lcd->sleepDisplay(true);
   digitalWrite(TFT_BL, LOW);    // display disable, sleep, BL OFF
   wait();
-  lcd.sleepDisplay(false); 
-  lcd.enableDisplay(true);
+  lcd->sleepDisplay(false);
+  lcd->enableDisplay(true);
   digitalWrite(TFT_BL, HIGH);
 
-  lcd.fillScreen(RGBto565(180,0,180));
+  lcd->fillScreen(RGBto565(180,0,180));
   font.printStr(ALIGN_CENTER,95,"Partial display");
   font.setColor(YELLOW);
   font.printStr(ALIGN_CENTER,6,"Top");
@@ -200,11 +202,11 @@ void loop()
   font.setColor(WHITE);
   wait(SLEEP_2S);
 
-  lcd.setPartArea(60*1, 60*3); lcd.partialDisplay(true);
+  lcd->setPartArea(60*1, 60*3); lcd->partialDisplay(true);
   wait();
 
-  lcd.setPartArea(60*3, 60*1); lcd.partialDisplay(true);
+  lcd->setPartArea(60*3, 60*1); lcd->partialDisplay(true);
   wait();
-  lcd.partialDisplay(false);
+  lcd->partialDisplay(false);
 }
 

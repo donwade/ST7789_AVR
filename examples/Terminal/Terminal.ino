@@ -22,7 +22,7 @@
 RREFont font;
 
 // needed for RREFont library initialization, define your fillRect
-void customRect(int x, int y, int w, int h, int c) { return lcd.fillRect(x, y, w, h, c); }
+void customRect(int x, int y, int w, int h, int c) { return lcd->fillRect(x, y, w, h, c); }
 
 int maxy = 320; // internal ST7789 fb is 240x320
 int xp = 0, yp = 240;
@@ -47,8 +47,8 @@ void scrollScreen()
   if(ys>=maxy) ys-=maxy;
   yp = ys+screenHt;
   if(yp>=maxy) yp-=maxy;
-  lcd.fillRect(0, yp, screenWd, charHt*sy, ((yp/charHt)&1) ? c1 : c0);
-  lcd.setScroll(ys);
+  lcd->fillRect(0, yp, screenWd, charHt*sy, ((yp/charHt)&1) ? c1 : c0);
+  lcd->setScroll(ys);
 }
 
 void printString(char *str)
@@ -96,18 +96,18 @@ void printTermChar(char c)
         } else if(v == 7) { // inverse
           font.setColor(bg, fg);
         } else if(v>=30 && v<38){ // fg colors
-          fg = colors[v-30]; 
+          fg = colors[v-30];
           if(bg==BLACK) font.setColor(fg); else font.setColor(fg, bg);
         } else if(v>=40 && v<48){
-          bg = colors[v-40]; 
+          bg = colors[v-40];
           if(bg==BLACK) font.setColor(fg); else font.setColor(fg, bg);
         } else if(v>=90 && v<98){ // fg colors
-          fg = colors[v-90]; 
+          fg = colors[v-90];
           if(bg==BLACK) font.setColor(fg); else font.setColor(fg, bg);
         } else if(v>=100 && v<108){
-          bg = colors[v-100]; 
+          bg = colors[v-100];
           if(bg==BLACK) font.setColor(fg); else font.setColor(fg, bg);
-        }          
+        }
       }
       vals[0]=vals[1]=vals[2]=vals[3]=0;
       nVals=0;
@@ -121,9 +121,9 @@ void printTermChar(char c)
   if(c==10) { scrollScreen(); return; } // LF
   if(c==13) { xp=0; return; } // CR
   if(c==8) { // BS
-    if(xp>0) xp-=charWd*sx; 
-    lcd.fillRect(xp, yp, charWd*sx, charHt*sy, BLACK);
-    return; 
+    if(xp>0) xp-=charWd*sx;
+    lcd->fillRect(xp, yp, charWd*sx, charHt*sy, BLACK);
+    return;
   }
   if(xp<screenWd) font.drawChar(xp, yp, c); // 150-650us
   xp+=charWd*sx;
@@ -151,22 +151,22 @@ void testVT100()
     printString("\e[0m");
   }
   //delay(2000);
-} 
+}
 
-void setup() 
+void ST7789_AVR *lcd = new ST7789_AVR(TFT_DC, TFT_RST, TFT_CS, TFT_MOSI, TFT_MISO, TFT_CLK); \n setup()
 {
   //Serial.begin(9600); // perfect
   Serial.begin(19200); // perfect
   //Serial.begin(28800); // almost ok
-  lcd.init(SCR_WD, SCR_HT);
-  lcd.fillScreen(BLACK);
+  lcd->init(SCR_WD, SCR_HT);
+  lcd->fillScreen(BLACK);
   font.init(customRect, SCR_WD, SCR_HT); // custom fillRect function and screen width and height values
   font.setFont(&rre_fjg_8x16);
   charWd = font.getWidth();
   charHt = font.getHeight();
   font.setColor(WHITE);
-  font.setCharMinWd(8);  
-  lcd.setScrollArea(0,0);
+  font.setCharMinWd(8);
+  lcd->setScrollArea(0,0);
   //testVT100();
   printString("\e[0;44m *** Terminal Init *** \e[0m\n");
 }

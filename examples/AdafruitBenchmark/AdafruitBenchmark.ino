@@ -14,10 +14,10 @@ unsigned long FillScreenTest()
 {
   unsigned long start = millis();
   for(int i=0;i<5;i++) {
-    lcd.fillScreen(RED);
-    lcd.fillScreen(GREEN);
-    lcd.fillScreen(BLUE);
-    lcd.fillScreen(YELLOW);
+    lcd->fillScreen(RED);
+    lcd->fillScreen(GREEN);
+    lcd->fillScreen(BLUE);
+    lcd->fillScreen(YELLOW);
   }
   return millis()-start;
 }
@@ -26,8 +26,8 @@ unsigned long FillScreenTest()
 unsigned long ClearScreenTest()
 {
   unsigned long start = millis();
-  for(int i=0;i<5*4;i++) 
-    lcd.fillScreen(BLACK);
+  for(int i=0;i<5*4;i++)
+    lcd->fillScreen(BLACK);
   return millis()-start;
 }
 
@@ -37,17 +37,17 @@ const uint16_t imgF[] PROGMEM = {0xF800,0xF840,0xF8A0,0xF900,0xF960,0xF9C0,0xFA2
 uint16_t img[SCR_WD+16];
 unsigned long DrawImageTest()
 {
-  for(int i=0;i<SCR_WD+16;i++) img[i] = lcd.rgbWheel(500L*i/SCR_WD);
+  for(int i=0;i<SCR_WD+16;i++) img[i] = lcd->rgbWheel(500L*i/SCR_WD);
   unsigned long start = millis();
-  for(int i=0;i<5*4;i++) for(int y=0;y<SCR_HT;y++) lcd.drawImage(0,y,SCR_WD,1,img+(((y>>2)+i)&0xf));
+  for(int i=0;i<5*4;i++) for(int y=0;y<SCR_HT;y++) lcd->drawImage(0,y,SCR_WD,1,img+(((y>>2)+i)&0xf));
   return millis()-start;
 }
 
-// ------------------------------------------------ 
+// ------------------------------------------------
 unsigned long DrawImageFTest()
 {
   unsigned long start = millis();
-  for(int i=0;i<5*4;i++) for(int y=0;y<SCR_HT;y++) lcd.drawImageF(0,y,SCR_WD,1,imgF+(((y>>2)+i)&0xf));
+  for(int i=0;i<5*4;i++) for(int y=0;y<SCR_HT;y++) lcd->drawImageF(0,y,SCR_WD,1,imgF+(((y>>2)+i)&0xf));
   return millis()-start;
 }
 // ------------------------------------------------
@@ -66,19 +66,19 @@ void result(int i)
   Serial.println("%");
 }
 
-void setup(void) 
+void setup(void)
 {
   Serial.begin(115200);
   //Serial.println(F("IPS 240x240 ST7789"));
   //lcd.reset();
-  lcd.init(SCR_WD, SCR_HT);
+  lcd->init(SCR_WD, SCR_HT);
   //lcd.begin();
-  lcd.fillScreen(BLACK);
-  lcd.setCursor(0, 0);
-  lcd.setTextColor(WHITE);  lcd.setTextSize(2);
-  lcd.println("IPS 240x240 ST7789");
-  lcd.println("Library Benchmark");
-  lcd.println("starts in 3s ...");
+  lcd->fillScreen(BLACK);
+  lcd->setCursor(0, 0);
+  lcd->setTextColor(WHITE);  lcd->setTextSize(2);
+  lcd->println("IPS 240x240 ST7789");
+  lcd->println("Library Benchmark");
+  lcd->println("starts in 3s ...");
   delay(3000);
 
   Serial.println(F("Benchmark                Time (microseconds)"));
@@ -94,11 +94,11 @@ void setup(void)
 
   res[1]=DrawImageTest();
   Serial.print(F("DrawImage Mbps           "));
-  Serial.println(String(res[1])+"ms  "+String(1000*20.0/res[1])+"fps  "+String(20.0*SCR_WD*SCR_HT*16/res[1]/1000.0)+" Mbps\t"+100*orig[1]/res[1]+"%"); 
+  Serial.println(String(res[1])+"ms  "+String(1000*20.0/res[1])+"fps  "+String(20.0*SCR_WD*SCR_HT*16/res[1]/1000.0)+" Mbps\t"+100*orig[1]/res[1]+"%");
 
   res[1]=DrawImageFTest();
   Serial.print(F("DrawImageF Mbps          "));
-  Serial.println(String(res[1])+"ms  "+String(1000*20.0/res[1])+"fps  "+String(20.0*SCR_WD*SCR_HT*16/res[1]/1000.0)+" Mbps\t"+100*orig[1]/res[1]+"%"); 
+  Serial.println(String(res[1])+"ms  "+String(1000*20.0/res[1])+"fps  "+String(20.0*SCR_WD*SCR_HT*16/res[1]/1000.0)+" Mbps\t"+100*orig[1]/res[1]+"%");
 
   res[2]=testFillScreen();
   Serial.print(F("Screen fill              "));
@@ -165,48 +165,48 @@ void setup(void)
   Serial.println();
 
   int c1=YELLOW, c2=WHITE;
-  lcd.fillScreen(BLACK);
-  lcd.setCursor(0, 0);
-  lcd.setTextSize(2);
-  lcd.setTextColor(CYAN);
-  lcd.println("RESULTS:");
+  lcd->fillScreen(BLACK);
+  lcd->setCursor(0, 0);
+  lcd->setTextSize(2);
+  lcd->setTextColor(CYAN);
+  lcd->println("RESULTS:");
 
-  lcd.setTextSize(1);
-  lcd.println();
-  lcd.setTextColor(GREEN);
-  lcd.println(F("Benchmark               Time (us)"));
-  lcd.setTextColor(c1); lcd.print(F("FillScreen Mbps         "));
-  lcd.setTextColor(c2); lcd.println(String(res[0])+"ms "+String(20.0*SCR_WD*SCR_HT*16/res[0]/1000.0)+" Mbps");
+  lcd->setTextSize(1);
+  lcd->println();
+  lcd->setTextColor(GREEN);
+  lcd->println(F("Benchmark               Time (us)"));
+  lcd->setTextColor(c1); lcd->print(F("FillScreen Mbps         "));
+  lcd->setTextColor(c2); lcd->println(String(res[0])+"ms "+String(20.0*SCR_WD*SCR_HT*16/res[0]/1000.0)+" Mbps");
   //lcd.setTextColor(c1); lcd.print(F("ClearScreen Mbps        "));
   //lcd.setTextColor(c2); lcd.print(String(res[1])+"ms "+String(20.0*SCR_WD*SCR_HT*16/res[1]/1000.0)+" Mbps");
-  lcd.setTextColor(c1); lcd.print(F("DrawImageF Mbps         "));
-  lcd.setTextColor(c2); lcd.println(String(res[1])+"ms "+String(20.0*SCR_WD*SCR_HT*16/res[1]/1000.0)+" Mbps");
+  lcd->setTextColor(c1); lcd->print(F("DrawImageF Mbps         "));
+  lcd->setTextColor(c2); lcd->println(String(res[1])+"ms "+String(20.0*SCR_WD*SCR_HT*16/res[1]/1000.0)+" Mbps");
 
-  lcd.setTextColor(c1); lcd.print(F("Screen fill             "));
-  lcd.setTextColor(c2); lcd.println(res[3]);
-  lcd.setTextColor(c1); lcd.print(F("Text                    "));
-  lcd.setTextColor(c2); lcd.println(res[4]);
-  lcd.setTextColor(c1); lcd.print(F("Lines                   "));
-  lcd.setTextColor(c2); lcd.println(res[5]);
-  lcd.setTextColor(c1); lcd.print(F("Horiz/Vert Lines        "));
-  lcd.setTextColor(c2); lcd.println(res[6]);
-  lcd.setTextColor(c1); lcd.print(F("Rectangles (outline)    "));
-  lcd.setTextColor(c2); lcd.println(res[8]);
-  lcd.setTextColor(c1); lcd.print(F("Rectangles (filled)     "));
-  lcd.setTextColor(c2); lcd.println(res[9]);
-  lcd.setTextColor(c1); lcd.print(F("Circles (filled)        "));
-  lcd.setTextColor(c2); lcd.println(res[10]);
-  lcd.setTextColor(c1); lcd.print(F("Circles (outline)       "));
-  lcd.setTextColor(c2); lcd.println(res[11]);
-  lcd.setTextColor(c1); lcd.print(F("Triangles (outline)     "));
-  lcd.setTextColor(c2); lcd.println(res[12]);
-  lcd.setTextColor(c1); lcd.print(F("Triangles (filled)      "));
-  lcd.setTextColor(c2); lcd.println(res[13]);
-  lcd.setTextColor(c1); lcd.print(F("Rounded rects (outline) "));
-  lcd.setTextColor(c2); lcd.println(res[14]);
-  lcd.setTextColor(c1); lcd.print(F("Rounded rects (filled)  "));
-  lcd.setTextColor(c2); lcd.println(res[15]);
-  lcd.setTextColor(RED); lcd.println(F("Done!"));
+  lcd->setTextColor(c1); lcd->print(F("Screen fill             "));
+  lcd->setTextColor(c2); lcd->println(res[3]);
+  lcd->setTextColor(c1); lcd->print(F("Text                    "));
+  lcd->setTextColor(c2); lcd->println(res[4]);
+  lcd->setTextColor(c1); lcd->print(F("Lines                   "));
+  lcd->setTextColor(c2); lcd->println(res[5]);
+  lcd->setTextColor(c1); lcd->print(F("Horiz/Vert Lines        "));
+  lcd->setTextColor(c2); lcd->println(res[6]);
+  lcd->setTextColor(c1); lcd->print(F("Rectangles (outline)    "));
+  lcd->setTextColor(c2); lcd->println(res[8]);
+  lcd->setTextColor(c1); lcd->print(F("Rectangles (filled)     "));
+  lcd->setTextColor(c2); lcd->println(res[9]);
+  lcd->setTextColor(c1); lcd->print(F("Circles (filled)        "));
+  lcd->setTextColor(c2); lcd->println(res[10]);
+  lcd->setTextColor(c1); lcd->print(F("Circles (outline)       "));
+  lcd->setTextColor(c2); lcd->println(res[11]);
+  lcd->setTextColor(c1); lcd->print(F("Triangles (outline)     "));
+  lcd->setTextColor(c2); lcd->println(res[12]);
+  lcd->setTextColor(c1); lcd->print(F("Triangles (filled)      "));
+  lcd->setTextColor(c2); lcd->println(res[13]);
+  lcd->setTextColor(c1); lcd->print(F("Rounded rects (outline) "));
+  lcd->setTextColor(c2); lcd->println(res[14]);
+  lcd->setTextColor(c1); lcd->print(F("Rounded rects (filled)  "));
+  lcd->setTextColor(c2); lcd->println(res[15]);
+  lcd->setTextColor(RED); lcd->println(F("Done!"));
 }
 
 /*
@@ -411,7 +411,7 @@ Done!
 */
 // ------------------------------------------------
 
-void loop(void) 
+void loop(void)
 {
 }
 
@@ -419,39 +419,39 @@ void loop(void)
 
 unsigned long testFillScreen() {
   unsigned long start = micros();
-  lcd.fillScreen(BLACK);
-  lcd.fillScreen(RED);
-  lcd.fillScreen(GREEN);
-  lcd.fillScreen(BLUE);
-  lcd.fillScreen(BLACK);
+  lcd->fillScreen(BLACK);
+  lcd->fillScreen(RED);
+  lcd->fillScreen(GREEN);
+  lcd->fillScreen(BLUE);
+  lcd->fillScreen(BLACK);
   return micros() - start;
 }
 
 // ------------------------------------------------
 unsigned long testText() {
-  lcd.fillScreen(BLACK);
+  lcd->fillScreen(BLACK);
   unsigned long start = micros();
-  lcd.setCursor(0, 0);
-  lcd.setTextColor(WHITE);  lcd.setTextSize(1);
-  lcd.println("Hello World!");
-  lcd.setTextColor(YELLOW); lcd.setTextSize(2);
-  lcd.println(1234.56);
-  lcd.setTextColor(RED);    lcd.setTextSize(3);
-  lcd.println(0xDEADBEEF, HEX);
-  lcd.println();
-  lcd.setTextColor(GREEN);
-  lcd.setTextSize(5);
-  lcd.println("Groop");
-  lcd.setTextSize(2);
-  lcd.println("I implore thee,");
-  lcd.setTextSize(1);
-  lcd.println("my foonting turlingdromes.");
-  lcd.println("And hooptiously drangle me");
-  lcd.println("with crinkly bindlewurdles,");
-  lcd.println("Or I will rend thee");
-  lcd.println("in the gobberwarts");
-  lcd.println("with my blurglecruncheon,");
-  lcd.println("see if I don't!");
+  lcd->setCursor(0, 0);
+  lcd->setTextColor(WHITE);  lcd->setTextSize(1);
+  lcd->println("Hello World!");
+  lcd->setTextColor(YELLOW); lcd->setTextSize(2);
+  lcd->println(1234.56);
+  lcd->setTextColor(RED);    lcd->setTextSize(3);
+  lcd->println(0xDEADBEEF, HEX);
+  lcd->println();
+  lcd->setTextColor(GREEN);
+  lcd->setTextSize(5);
+  lcd->println("Groop");
+  lcd->setTextSize(2);
+  lcd->println("I implore thee,");
+  lcd->setTextSize(1);
+  lcd->println("my foonting turlingdromes.");
+  lcd->println("And hooptiously drangle me");
+  lcd->println("with crinkly bindlewurdles,");
+  lcd->println("Or I will rend thee");
+  lcd->println("in the gobberwarts");
+  lcd->println("with my blurglecruncheon,");
+  lcd->println("see if I don't!");
   return micros() - start;
 }
 
@@ -459,50 +459,50 @@ unsigned long testText() {
 unsigned long testLines(uint16_t color) {
   unsigned long start, t;
   int           x1, y1, x2, y2,
-                w = lcd.width(),
-                h = lcd.height();
+                w = lcd->width(),
+                h = lcd->height();
 
-  lcd.fillScreen(BLACK);
+  lcd->fillScreen(BLACK);
 
   x1 = y1 = 0;
   y2    = h - 1;
   start = micros();
-  for(x2=0; x2<w; x2+=6) lcd.drawLine(x1, y1, x2, y2, color);
+  for(x2=0; x2<w; x2+=6) lcd->drawLine(x1, y1, x2, y2, color);
   x2    = w - 1;
-  for(y2=0; y2<h; y2+=6) lcd.drawLine(x1, y1, x2, y2, color);
+  for(y2=0; y2<h; y2+=6) lcd->drawLine(x1, y1, x2, y2, color);
   t     = micros() - start; // fillScreen doesn't count against timing
 
-  lcd.fillScreen(BLACK);
+  lcd->fillScreen(BLACK);
 
   x1    = w - 1;
   y1    = 0;
   y2    = h - 1;
   start = micros();
-  for(x2=0; x2<w; x2+=6) lcd.drawLine(x1, y1, x2, y2, color);
+  for(x2=0; x2<w; x2+=6) lcd->drawLine(x1, y1, x2, y2, color);
   x2    = 0;
-  for(y2=0; y2<h; y2+=6) lcd.drawLine(x1, y1, x2, y2, color);
+  for(y2=0; y2<h; y2+=6) lcd->drawLine(x1, y1, x2, y2, color);
   t    += micros() - start;
 
-  lcd.fillScreen(BLACK);
+  lcd->fillScreen(BLACK);
 
   x1    = 0;
   y1    = h - 1;
   y2    = 0;
   start = micros();
-  for(x2=0; x2<w; x2+=6) lcd.drawLine(x1, y1, x2, y2, color);
+  for(x2=0; x2<w; x2+=6) lcd->drawLine(x1, y1, x2, y2, color);
   x2    = w - 1;
-  for(y2=0; y2<h; y2+=6) lcd.drawLine(x1, y1, x2, y2, color);
+  for(y2=0; y2<h; y2+=6) lcd->drawLine(x1, y1, x2, y2, color);
   t    += micros() - start;
 
-  lcd.fillScreen(BLACK);
+  lcd->fillScreen(BLACK);
 
   x1    = w - 1;
   y1    = h - 1;
   y2    = 0;
   start = micros();
-  for(x2=0; x2<w; x2+=6) lcd.drawLine(x1, y1, x2, y2, color);
+  for(x2=0; x2<w; x2+=6) lcd->drawLine(x1, y1, x2, y2, color);
   x2    = 0;
-  for(y2=0; y2<h; y2+=6) lcd.drawLine(x1, y1, x2, y2, color);
+  for(y2=0; y2<h; y2+=6) lcd->drawLine(x1, y1, x2, y2, color);
 
   return micros() - start;
 }
@@ -510,12 +510,12 @@ unsigned long testLines(uint16_t color) {
 // ------------------------------------------------
 unsigned long testFastLines(uint16_t color1, uint16_t color2) {
   unsigned long start;
-  int           x, y, w = lcd.width(), h = lcd.height();
+  int           x, y, w = lcd->width(), h = lcd->height();
 
-  lcd.fillScreen(BLACK);
+  lcd->fillScreen(BLACK);
   start = micros();
-  for(y=0; y<h; y+=5) lcd.drawFastHLine(0, y, w, color1);
-  for(x=0; x<w; x+=5) lcd.drawFastVLine(x, 0, h, color2);
+  for(y=0; y<h; y+=5) lcd->drawFastHLine(0, y, w, color1);
+  for(x=0; x<w; x+=5) lcd->drawFastVLine(x, 0, h, color2);
 
   return micros() - start;
 }
@@ -524,15 +524,15 @@ unsigned long testFastLines(uint16_t color1, uint16_t color2) {
 unsigned long testRects(uint16_t color) {
   unsigned long start;
   int           n, i, i2,
-                cx = lcd.width()  / 2,
-                cy = lcd.height() / 2;
+                cx = lcd->width()  / 2,
+                cy = lcd->height() / 2;
 
-  lcd.fillScreen(BLACK);
-  n     = min(lcd.width(), lcd.height());
+  lcd->fillScreen(BLACK);
+  n     = min(lcd->width(), lcd->height());
   start = micros();
   for(i=2; i<n; i+=6) {
     i2 = i / 2;
-    lcd.drawRect(cx-i2, cy-i2, i, i, color);
+    lcd->drawRect(cx-i2, cy-i2, i, i, color);
   }
 
   return micros() - start;
@@ -542,18 +542,18 @@ unsigned long testRects(uint16_t color) {
 unsigned long testFilledRects(uint16_t color1, uint16_t color2) {
   unsigned long start, t = 0;
   int           n, i, i2,
-                cx = lcd.width()  / 2 - 1,
-                cy = lcd.height() / 2 - 1;
+                cx = lcd->width()  / 2 - 1,
+                cy = lcd->height() / 2 - 1;
 
-  lcd.fillScreen(BLACK);
-  n = min(lcd.width(), lcd.height());
+  lcd->fillScreen(BLACK);
+  n = min(lcd->width(), lcd->height());
   for(i=n; i>0; i-=6) {
     i2    = i / 2;
     start = micros();
-    lcd.fillRect(cx-i2, cy-i2, i, i, color1);
+    lcd->fillRect(cx-i2, cy-i2, i, i, color1);
     t    += micros() - start;
     // Outlines are not included in timing results
-    lcd.drawRect(cx-i2, cy-i2, i, i, color2);
+    lcd->drawRect(cx-i2, cy-i2, i, i, color2);
   }
 
   return t;
@@ -562,13 +562,13 @@ unsigned long testFilledRects(uint16_t color1, uint16_t color2) {
 // ------------------------------------------------
 unsigned long testFilledCircles(uint8_t radius, uint16_t color) {
   unsigned long start;
-  int x, y, w = lcd.width(), h = lcd.height(), r2 = radius * 2;
+  int x, y, w = lcd->width(), h = lcd->height(), r2 = radius * 2;
 
-  lcd.fillScreen(BLACK);
+  lcd->fillScreen(BLACK);
   start = micros();
   for(x=radius; x<w; x+=r2) {
     for(y=radius; y<h; y+=r2) {
-      lcd.fillCircle(x, y, radius, color);
+      lcd->fillCircle(x, y, radius, color);
     }
   }
 
@@ -579,15 +579,15 @@ unsigned long testFilledCircles(uint8_t radius, uint16_t color) {
 unsigned long testCircles(uint8_t radius, uint16_t color) {
   unsigned long start;
   int           x, y, r2 = radius * 2,
-                w = lcd.width()  + radius,
-                h = lcd.height() + radius;
+                w = lcd->width()  + radius,
+                h = lcd->height() + radius;
 
   // Screen is not cleared for this one -- this is
   // intentional and does not affect the reported time.
   start = micros();
   for(x=0; x<w; x+=r2) {
     for(y=0; y<h; y+=r2) {
-      lcd.drawCircle(x, y, radius, color);
+      lcd->drawCircle(x, y, radius, color);
     }
   }
 
@@ -597,18 +597,18 @@ unsigned long testCircles(uint8_t radius, uint16_t color) {
 // ------------------------------------------------
 unsigned long testTriangles() {
   unsigned long start;
-  int           n, i, cx = lcd.width()  / 2 - 1,
-                      cy = lcd.height() / 2 - 1;
+  int           n, i, cx = lcd->width()  / 2 - 1,
+                      cy = lcd->height() / 2 - 1;
 
-  lcd.fillScreen(BLACK);
+  lcd->fillScreen(BLACK);
   n     = min(cx, cy);
   start = micros();
   for(i=0; i<n; i+=5) {
-    lcd.drawTriangle(
+    lcd->drawTriangle(
       cx    , cy - i, // peak
       cx - i, cy + i, // bottom left
       cx + i, cy + i, // bottom right
-      lcd.color565(0, 0, i));
+      lcd->color565(0, 0, i));
   }
 
   return micros() - start;
@@ -617,18 +617,18 @@ unsigned long testTriangles() {
 // ------------------------------------------------
 unsigned long testFilledTriangles() {
   unsigned long start, t = 0;
-  int           i, cx = lcd.width()  / 2 - 1,
-                   cy = lcd.height() / 2 - 1;
+  int           i, cx = lcd->width()  / 2 - 1,
+                   cy = lcd->height() / 2 - 1;
 
-  lcd.fillScreen(BLACK);
+  lcd->fillScreen(BLACK);
   start = micros();
   for(i=min(cx,cy); i>10; i-=5) {
     start = micros();
-    lcd.fillTriangle(cx, cy - i, cx - i, cy + i, cx + i, cy + i,
-      lcd.color565(0, i, i));
+    lcd->fillTriangle(cx, cy - i, cx - i, cy + i, cx + i, cy + i,
+      lcd->color565(0, i, i));
     t += micros() - start;
-    lcd.drawTriangle(cx, cy - i, cx - i, cy + i, cx + i, cy + i,
-      lcd.color565(i, i, 0));
+    lcd->drawTriangle(cx, cy - i, cx - i, cy + i, cx + i, cy + i,
+      lcd->color565(i, i, 0));
   }
 
   return t;
@@ -638,15 +638,15 @@ unsigned long testFilledTriangles() {
 unsigned long testRoundRects() {
   unsigned long start;
   int           w, i, i2,
-                cx = lcd.width()  / 2 - 1,
-                cy = lcd.height() / 2 - 1;
+                cx = lcd->width()  / 2 - 1,
+                cy = lcd->height() / 2 - 1;
 
-  lcd.fillScreen(BLACK);
-  w     = min(lcd.width(), lcd.height());
+  lcd->fillScreen(BLACK);
+  w     = min(lcd->width(), lcd->height());
   start = micros();
   for(i=0; i<w; i+=6) {
     i2 = i / 2;
-    lcd.drawRoundRect(cx-i2, cy-i2, i, i, i/8, lcd.color565(i, 0, 0));
+    lcd->drawRoundRect(cx-i2, cy-i2, i, i, i/8, lcd->color565(i, 0, 0));
   }
 
   return micros() - start;
@@ -656,14 +656,14 @@ unsigned long testRoundRects() {
 unsigned long testFilledRoundRects() {
   unsigned long start;
   int           i, i2,
-                cx = lcd.width()  / 2 - 1,
-                cy = lcd.height() / 2 - 1;
+                cx = lcd->width()  / 2 - 1,
+                cy = lcd->height() / 2 - 1;
 
-  lcd.fillScreen(BLACK);
+  lcd->fillScreen(BLACK);
   start = micros();
-  for(i=min(lcd.width(), lcd.height()); i>20; i-=6) {
+  for(i=min(lcd->width(), lcd->height()); i>20; i-=6) {
     i2 = i / 2;
-    lcd.fillRoundRect(cx-i2, cy-i2, i, i, i/8, lcd.color565(0, i, 0));
+    lcd->fillRoundRect(cx-i2, cy-i2, i, i, i/8, lcd->color565(0, i, 0));
   }
 
   return micros() - start;
