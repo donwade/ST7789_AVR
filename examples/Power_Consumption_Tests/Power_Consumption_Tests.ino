@@ -81,7 +81,7 @@ void wait(int t=SLEEP_4S)
   lcd->init(SCR_WD, SCR_HT);
 }
 
-void ST7789_AVR *lcd = new ST7789_AVR(TFT_DC, TFT_RST, TFT_CS, TFT_MOSI, TFT_MISO, TFT_CLK);
+ST7789_AVR *lcd = new ST7789_AVR(ENGINE_HSPI, TFT_DC, TFT_RST, TFT_CS, TFT_MOSI, TFT_MISO, TFT_CLK);
 
 void setup()
 {

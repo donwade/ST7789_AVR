@@ -216,7 +216,7 @@ void ST7789_AVR::writeData16(uint16_t d16)
 }
 
 // ----------------------------------------------------------
-ST7789_AVR::ST7789_AVR(int8_t dc, int8_t rst, int8_t cs, int8_t mosi, int8_t miso,  int8_t clk) : Adafruit_GFX(ST7789_TFTWIDTH, ST7789_TFTHEIGHT)
+ST7789_AVR::ST7789_AVR(SPI_ENGINE who, int8_t dc, int8_t rst, int8_t cs, int8_t mosi, int8_t miso,  int8_t clk) : Adafruit_GFX(ST7789_TFTWIDTH, ST7789_TFTHEIGHT)
 {
   csPin = cs;
   dcPin = dc;
@@ -224,13 +224,15 @@ ST7789_AVR::ST7789_AVR(int8_t dc, int8_t rst, int8_t cs, int8_t mosi, int8_t mis
   mosiPin = mosi;
   misoPin = miso;
   clkPin = clk;
+  select = who;
 }
 // ----------------------------------------------------------
 void ST7789_AVR::init(uint16_t wd, uint16_t ht)
 {
 
+  assert(select);
   //SCLK, MISO, MOSI, SS
-  aSPI = new SPIClass(HSPI);
+  aSPI = new SPIClass(select == ENGINE_HSPI ? HSPI : VSPI);
   aSPI->begin(clkPin  , misoPin, mosiPin,  csPin);
   pinMode(aSPI->pinSS(), OUTPUT);  //HSPI SS
 

@@ -153,7 +153,7 @@ void testVT100()
   //delay(2000);
 }
 
-void ST7789_AVR *lcd = new ST7789_AVR(TFT_DC, TFT_RST, TFT_CS, TFT_MOSI, TFT_MISO, TFT_CLK); \n setup()
+ST7789_AVR *lcd = new ST7789_AVR(ENGINE_HSPI, TFT_DC, TFT_RST, TFT_CS, TFT_MOSI, TFT_MISO, TFT_CLK); \n setup()
 {
   //Serial.begin(9600); // perfect
   Serial.begin(19200); // perfect

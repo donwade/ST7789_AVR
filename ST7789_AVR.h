@@ -42,10 +42,17 @@
 #define	LBLUE RGBto565(100,100,255)
 #define	DBLUE RGBto565(  0,  0,128)
 
+typedef enum SPI_ENGINE
+{
+    ENGINE_NONE,
+    ENGINE_HSPI,
+    ENGINE_VSPI
+};
+
 class ST7789_AVR : public Adafruit_GFX {
 
  public:
-  ST7789_AVR(int8_t DC, int8_t RST=-1, int8_t CS=-1, int8_t MOSI=-1, int8_t MISO=-1, int8_t  CLK=-1);
+  ST7789_AVR(SPI_ENGINE ok, int8_t DC, int8_t RST=-1, int8_t CS=-1, int8_t MOSI=-1, int8_t MISO=-1, int8_t  CLK=-1);
 
   void init(uint16_t wd, uint16_t ht);
   void begin() { init(ST7789_TFTWIDTH,ST7789_TFTHEIGHT); }
@@ -103,6 +110,7 @@ class ST7789_AVR : public Adafruit_GFX {
  private:
   int8_t  csPin, dcPin, rstPin, mosiPin, misoPin, clkPin ;
   uint8_t  csMask, dcMask;
+  SPI_ENGINE select;
 
   //uninitialised pointers to SPI objects
   SPIClass *aSPI = NULL;
@@ -157,16 +165,23 @@ extern ST7789_AVR *lcd;
 	#error pick VSPI or HSPI
 #endif
 
+
+#define Stringize( L )     #L
+#define MakeString( M, L ) M(L)
+#define $Line MakeString( Stringize, __LINE__ )
+#define Reminder __FILE__ "(" $Line ") : Reminder: "
+#pragma message(Reminder "Fix this problem!")
+
 #define XSTR(x) STR(x)
 #define STR(x) #x
-
-#pragma message "TFT_MOSI  = " XSTR(TFT_MOSI  )
-#pragma message "TFT_MISO  = " XSTR(TFT_MISO  )
-#pragma message "TFT_CLK   = " XSTR(TFT_CLK   )
-#pragma message "TFT_DC    = " XSTR(TFT_DC    )
-#pragma message "TFT_CS    = " XSTR(TFT_CS    )
-#pragma message "TFT_RST   = " XSTR(TFT_RST   )
-#pragma message "TFT_BLGT  = " XSTR(TFT_BLGT  )
-
+/*
+#pragma message ("TFT_MOSI  = " XSTR(TFT_MOSI))
+#pragma message ("TFT_MISO  = " XSTR(TFT_MISO))
+#pragma message ("TFT_CLK   = " XSTR(TFT_CLK))
+#pragma message ("TFT_DC    = " XSTR(TFT_DC))
+#pragma message ("TFT_CS    = " XSTR(TFT_CS))
+#pragma message ("TFT_RST   = " XSTR(TFT_RST))
+#pragma message ("TFT_BLGT  = " XSTR(TFT_BLGT))
+*/
 
 #endif
