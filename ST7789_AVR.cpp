@@ -186,27 +186,15 @@ static const uint8_t init_240x240[] = {
 };
 // -----------------------------------------
 
-#ifdef COMPATIBILITY_MODE
 static SPISettings spiSettings;
 #define SPI_START  hspi->beginTransaction(spiSettings)
 #define SPI_END    hspi->endTransaction()
-#else
-#define SPI_START
-#define SPI_END
-#endif
 
 // macros for fast DC and CS state changes
-#ifdef COMPATIBILITY_MODE
 #define DC_DATA     digitalWrite(dcPin, HIGH)
 #define DC_COMMAND  digitalWrite(dcPin, LOW)
 #define CS_IDLE     digitalWrite(csPin, HIGH)
 #define CS_ACTIVE   digitalWrite(csPin, LOW)
-#else
-#define DC_DATA    *dcPort |= dcMask
-#define DC_COMMAND *dcPort &= ~dcMask
-#define CS_IDLE    *csPort |= csMask
-#define CS_ACTIVE  *csPort &= ~csMask
-#endif
 
 // if CS always connected to the ground then don't do anything for better performance
 #ifdef CS_ALWAYS_LOW
@@ -220,98 +208,20 @@ static SPISettings spiSettings;
 // in compatibility mode (SPI.transfer(c)) -> about 4 Mbps
 inline void ST7789_AVR::writeSPI(uint8_t c)
 {
-#ifdef COMPATIBILITY_MODE
     hspi->transfer(c);
-#else
-    SPDR = c;
-    /*
-    asm volatile("nop"); // 8 NOPs seem to be enough for 16MHz AVR @ DIV2 to avoid using while loop
-    asm volatile("nop");
-    asm volatile("nop");
-    asm volatile("nop");
-    asm volatile("nop");
-    asm volatile("nop");
-    asm volatile("nop");
-    asm volatile("nop");
-    */
-    asm volatile("rjmp .+0\n");
-    asm volatile("rjmp .+0\n");
-    asm volatile("rjmp .+0\n");
-    asm volatile("rjmp .+0\n");
-    //while(!(SPSR & _BV(SPIF))) ;
-#endif
 }
 
 // ----------------------------------------------------------
 // fast method to send multiple 16-bit values via SPI
 inline void ST7789_AVR::writeMulti(uint16_t color, uint32_t num)
 {
-#ifdef COMPATIBILITY_MODE
   while(num--) { hspi->transfer(color>>8);  hspi->transfer(color); }
-#else
-  asm volatile
-  (
-  "next:\n"
-    "out %[spdr],%[hi]\n"
-    "rjmp .+0\n"  // wait 8*2+1 = 17 cycles
-    "rjmp .+0\n"
-    "rjmp .+0\n"
-    "rjmp .+0\n"
-    "rjmp .+0\n"
-    "rjmp .+0\n"
-    "rjmp .+0\n"
-    "rjmp .+0\n"
-    "nop\n"
-    "out %[spdr],%[lo]\n"
-    "rjmp .+0\n"  // wait 6*2+1 = 13 cycles + sbiw + brne
-    "rjmp .+0\n"
-    "rjmp .+0\n"
-    "rjmp .+0\n"
-    "rjmp .+0\n"
-    "rjmp .+0\n"
-    "nop\n"
-    "sbiw %[num],1\n"
-    "brne next\n"
-    : [num] "+w" (num)
-    : [spdr] "I" (_SFR_IO_ADDR(SPDR)), [lo] "r" ((uint8_t)color), [hi] "r" ((uint8_t)(color>>8))
-  );
-#endif
 }
 // ----------------------------------------------------------
 // fast method to send multiple 16-bit values from RAM via SPI
 inline void ST7789_AVR::copyMulti(uint8_t *img, uint32_t num)
 {
-#ifdef COMPATIBILITY_MODE
   while(num--) { hspi->transfer(*(img+1)); hspi->transfer(*(img+0)); img+=2; }
-#else
-  uint8_t lo,hi;
-  asm volatile
-  (
-  "nextCopy:\n"
-    "ld  %[hi],%a[img]+\n"
-    "ld  %[lo],%a[img]+\n"
-    "out %[spdr],%[lo]\n"
-    "rjmp .+0\n"  // wait 8*2+1 = 17 cycles
-    "rjmp .+0\n"
-    "rjmp .+0\n"
-    "rjmp .+0\n"
-    "rjmp .+0\n"
-    "rjmp .+0\n"
-    "rjmp .+0\n"
-    "rjmp .+0\n"
-    "nop\n"
-    "out %[spdr],%[hi]\n"
-    "rjmp .+0\n"  // wait 4*2+1 = 9 cycles + sbiw + brne + ld*2
-    "rjmp .+0\n"
-    "rjmp .+0\n"
-    "rjmp .+0\n"
-    "nop\n"
-    "sbiw %[num],1\n"
-    "brne nextCopy\n"
-    : [num] "+w" (num)
-    : [spdr] "I" (_SFR_IO_ADDR(SPDR)), [img] "e" (img), [lo] "r" (lo), [hi] "r" (hi)
-  );
-#endif
 }
 // ----------------------------------------------------------
 void ST7789_AVR::writeCmd(uint8_t c)
@@ -441,24 +351,10 @@ void ST7789_AVR::commonST7789Init(const uint8_t *cmdList)
 	pinMode(csPin, OUTPUT);
 #endif
 
-#ifndef COMPATIBILITY_MODE
-  dcPort = portOutputRegister(digitalPinToPort(dcPin));
-  dcMask = digitalPinToBitMask(dcPin);
-#ifndef CS_ALWAYS_LOW
-	csPort = portOutputRegister(digitalPinToPort(csPin));
-	csMask = digitalPinToBitMask(csPin);
-#endif
-#endif
-
   // on AVR ST7789 works correctly in MODE2 and MODE3 but for STM32 only MODE3 seems to be working
   //hspi->begin();
 
-#ifdef COMPATIBILITY_MODE
   spiSettings = SPISettings(16000000, MSBFIRST, SPI_MODE3);  // 8000000 gives max speed on AVR 16MHz
-#else
-  hspi->setClockDivider(SPI_CLOCK_DIV2);
-  hspi->setDataMode(SPI_MODE3);
-#endif
 
   if(csPin>=0) { pinMode(csPin, OUTPUT); digitalWrite(csPin, LOW); }
 
