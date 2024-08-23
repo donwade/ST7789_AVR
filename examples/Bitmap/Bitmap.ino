@@ -12,7 +12,7 @@
 #include "bitmap.h"
 
 uint16_t colorBar[50];
-
+ST7789_AVR *lcd = new ST7789_AVR(ENGINE_HSPI);
 void setup(void)
 {
   Serial.begin(115200);

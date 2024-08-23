@@ -96,11 +96,14 @@ void drawBall(int x, int y)
   }
 }
 
-ST7789_AVR *lcd = new ST7789_AVR(ENGINE_HSPI);
+ST7789_AVR *lcd; //new ST7789_AVR(ENGINE_HSPI);
 
 void setup()
 {
   Serial.begin(115200);
+  delay(3000);
+  lcd = new ST7789_AVR(ENGINE_HSPI);
+
   lcd->init(SCR_WD,SCR_HT);
   //lcd.setRotation(2);
   lcd->fillScreen(bgCol);

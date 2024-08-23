@@ -252,6 +252,14 @@ ST7789_AVR::ST7789_AVR(SPI_ENGINE who) : Adafruit_GFX(ST7789_TFTWIDTH, ST7789_TF
   #endif
   select = who;
 
+  Serial.printf("csPin   = %d\n", csPin);
+  Serial.printf("dcPin   = %d\n", dcPin);
+  Serial.printf("rstPin  = %d\n", rstPin);
+  Serial.printf("mosiPin = %d\n", mosiPin);
+  Serial.printf("misoPin = %d\n", misoPin);
+  Serial.printf("clkPin  = %d\n", clkPin);
+
+
 }
 // ----------------------------------------------------------
 void ST7789_AVR::init(uint16_t wd, uint16_t ht)
