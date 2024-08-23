@@ -53,6 +53,7 @@ class ST7789_AVR : public Adafruit_GFX {
 
  public:
   ST7789_AVR(SPI_ENGINE ok, int8_t DC, int8_t RST=-1, int8_t CS=-1, int8_t MOSI=-1, int8_t MISO=-1, int8_t  CLK=-1);
+  ST7789_AVR(SPI_ENGINE who);
 
   void init(uint16_t wd, uint16_t ht);
   void begin() { init(ST7789_TFTWIDTH,ST7789_TFTHEIGHT); }
@@ -122,49 +123,54 @@ void dprintf( const char *format, ...);
 
 // setup global LCD
 extern ST7789_AVR *lcd;
-//= ST7789_AVR(TFT_DC, TFT_RST, TFT_CS, TFT_MOSI, TFT_MISO, TFT_CLK);
 
-#define USE_VSPI_PINS 0
-#define USE_HSPI_PINS 1
+typedef struct PINOUT
+{
+    int8_t mosi_pin;   // GREEN   vspi classic
+    int8_t miso_pin;   // not used vspi classic
+    int8_t clk_pin;    // ORANGE vspi classic
+    int8_t dc_pin;     // BLUE   user defined
+    int8_t cs_pin;     // YELLOW vspi classic
+    int8_t rst_pin;    // BROWN  user defined
+    int8_t blgt_pin;   // GREY   user defined  DAC1 brightness
+};
 
-// hide the pinout so no one else can mess them up.
 
 #define TFT_3v3 // purple
 #define TFT_GND // white
-#if USE_VSPI_PINS
 
-// CONFLICT with camera usage. DO NOT use if you run the camera
+const PINOUT WROVER_VSPI
+{
+    .mosi_pin = 23,  // GREEN   vspi classic
+    .miso_pin = 19,  // not used vspi classic
+    .clk_pin  = 18,  // ORANGE vspi classic
+    .dc_pin   =  4,  // BLUE   user defined
+    .cs_pin   =  5,  // YELLOW vspi classic
+    .rst_pin  = 13,  // BROWN  user defined
+    .blgt_pin = 25,  // GREY   user defined  DAC1 brightness
+};
 
-	#pragma message ("USING VSPI PINOUT on HSPI core")
+const PINOUT WROVER_HSPI
+{
+    .mosi_pin = 13,  // GREEN    hspi classic
+    .miso_pin = -1,  // not used hspi classic
+    .clk_pin  = 14,  // ORANGE  hspi classic
+    .dc_pin   = 32,  // BLUE    user defined
+    .cs_pin   = 33,  // YELLOW  hspi classic
+    .rst_pin  = -1,  // BROWN   cant find a pin
+    .blgt_pin = -1,  // GREY    user defined  DAC1 brightness
+};
 
-    #define TFT_MOSI   23   //GREEN   vspi classic
-    #define TFT_MISO   19	// not used vspi classic
-    #define TFT_CLK    18   // ORANGE vspi classic
-    #define TFT_DC      4   // BLUE   user defined
-    #define TFT_CS      5   // YELLOW vspi classic
-    #define TFT_RST    13   // BROWN  user defined
-    #define TFT_BLGT   25   // GREY   user defined  DAC1 brightness
-//
-
-#elif USE_HSPI_PINS
-
-	// AVOID ALL CAMERA PINS
-	// AVOID ALL CAMERA PINS
-	// AVOID ALL CAMERA PINS
-	// AVOID ALL CAMERA PINS
-
-	#pragma message ("USING CLASSIC HSPI PINOUT on HSPI core")
-	#define TFT_MOSI   13   //GREEN   	hspi classic
-	#define TFT_MISO   -1	// not used hspi classic
-	#define TFT_CLK    14   // ORANGE 	hspi classic
-	#define TFT_DC     32   // BLUE     user defined
-	#define TFT_CS     33   // YELLOW 	hspi classic
-	#define TFT_RST    -1   // BROWN   cant find a pin
-	#define TFT_BLGT   -1   // GREY   user defined  DAC1 brightness
-#else
-	#error pick VSPI or HSPI
-#endif
-
+const PINOUT WROOM_SPI
+{
+    .mosi_pin = 13,  //GREEN    hspi classic
+    .miso_pin = -1,  // not used hspi classic
+    .clk_pin  = 14,  // ORANGE  hspi classic
+    .dc_pin   = 32,  // BLUE    user defined
+    .cs_pin   = 33,  // YELLOW  hspi classic
+    .rst_pin  = -1,  // BROWN   cant find a pin
+    .blgt_pin = -1   // GREY    user defined  DAC1 brightness
+};
 
 #define Stringize( L )     #L
 #define MakeString( M, L ) M(L)

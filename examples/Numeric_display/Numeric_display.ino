@@ -51,7 +51,7 @@ unsigned long ms = 0;
 #define SCR_HT ST7789_TFTHEIGHT
 
 
-ST7789_AVR *lcd = new ST7789_AVR(ENGINE_HSPI, TFT_DC, TFT_RST, TFT_CS, TFT_MOSI, TFT_MISO, TFT_CLK);
+ST7789_AVR *lcd = new ST7789_AVR(ENGINE_HSPI);
 
 void setup()
 {
@@ -66,6 +66,7 @@ void setup()
   Serial.println("setup done");
     delay(2000);
 }
+
 const uint16_t lnCol  = RGBto565(255,150,255);
 const uint16_t ln2Col = RGBto565(180,180,180);
 const uint16_t labCol = RGBto565(250,250,250);

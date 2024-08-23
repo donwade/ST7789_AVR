@@ -19,7 +19,8 @@ RREFont font;
 // needed for RREFont library initialization, define your fillRect
 void customRect(int x, int y, int w, int h, int c) { return lcd->fillRect(x, y, w, h, c); }
 
-ST7789_AVR *lcd = new ST7789_AVR(ENGINE_HSPI, TFT_DC, TFT_RST, TFT_CS, TFT_MOSI, TFT_MISO, TFT_CLK);
+ST7789_AVR *lcd = new ST7789_AVR(ENGINE_HSPI);
+
 void  setup()
 {
   Serial.begin(115200);

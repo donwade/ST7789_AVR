@@ -419,7 +419,9 @@ void setBuildTime()
 #define BIT_IMAGE_WD 240
 #define BIT_IMAGE_HT 240
 
-ST7789_AVR *lcd = new ST7789_AVR(ENGINE_HSPI, TFT_DC, TFT_RST, TFT_CS, TFT_MOSI, TFT_MISO, TFT_CLK); \n setup()
+ST7789_AVR *lcd = new ST7789_AVR(ENGINE_HSPI);
+
+void setup()
 {
   Serial.begin(9600);
   pinMode(BUTTON, INPUT_PULLUP);

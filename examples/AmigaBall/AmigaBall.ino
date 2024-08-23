@@ -96,7 +96,8 @@ void drawBall(int x, int y)
   }
 }
 
-ST7789_AVR *lcd = new ST7789_AVR(ENGINE_HSPI, TFT_DC, TFT_RST, TFT_CS, TFT_MOSI, TFT_MISO, TFT_CLK);
+ST7789_AVR *lcd = new ST7789_AVR(ENGINE_HSPI);
+
 void setup()
 {
   Serial.begin(115200);

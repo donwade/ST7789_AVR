@@ -226,6 +226,32 @@ ST7789_AVR::ST7789_AVR(SPI_ENGINE who, int8_t dc, int8_t rst, int8_t cs, int8_t 
   clkPin = clk;
   select = who;
 }
+
+// ----------------------------------------------------------
+ST7789_AVR::ST7789_AVR(SPI_ENGINE who) : Adafruit_GFX(ST7789_TFTWIDTH, ST7789_TFTHEIGHT)
+{
+
+  if (who == ENGINE_HSPI)
+  {
+	  csPin = WROVER_HSPI.cs_pin;
+	  dcPin = WROVER_HSPI.dc_pin;
+	  rstPin = WROVER_HSPI.rst_pin;
+	  mosiPin = WROVER_HSPI.mosi_pin;
+	  misoPin = WROVER_HSPI.miso_pin;
+	  clkPin = WROVER_HSPI.clk_pin;
+	  select = who;
+  }
+  else if (who == ENGINE_VSPI)
+  {
+	  csPin = WROVER_VSPI.cs_pin;
+	  dcPin = WROVER_VSPI.dc_pin;
+	  rstPin = WROVER_VSPI.rst_pin;
+	  mosiPin = WROVER_VSPI.mosi_pin;
+	  misoPin = WROVER_VSPI.miso_pin;
+	  clkPin = WROVER_VSPI.clk_pin;
+	  select = who;
+  }
+}
 // ----------------------------------------------------------
 void ST7789_AVR::init(uint16_t wd, uint16_t ht)
 {
