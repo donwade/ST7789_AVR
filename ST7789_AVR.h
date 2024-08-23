@@ -52,7 +52,7 @@ typedef enum SPI_ENGINE
 class ST7789_AVR : public Adafruit_GFX {
 
  public:
-  ST7789_AVR(SPI_ENGINE ok, int8_t DC, int8_t RST=-1, int8_t CS=-1, int8_t MOSI=-1, int8_t MISO=-1, int8_t  CLK=-1);
+  //ST7789_AVR(SPI_ENGINE ok, int8_t DC, int8_t RST=-1, int8_t CS=-1, int8_t MOSI=-1, int8_t MISO=-1, int8_t  CLK=-1);
   ST7789_AVR(SPI_ENGINE who);
 
   void init(uint16_t wd, uint16_t ht);
@@ -161,14 +161,14 @@ const PINOUT WROVER_HSPI
     .blgt_pin = -1,  // GREY    user defined  DAC1 brightness
 };
 
-const PINOUT WROOM_SPI
+const PINOUT WROOM_HSPI
 {
-    .mosi_pin = 13,  //GREEN    hspi classic
+    .mosi_pin = 40,  //GREEN    hspi classic
     .miso_pin = -1,  // not used hspi classic
-    .clk_pin  = 14,  // ORANGE  hspi classic
-    .dc_pin   = 32,  // BLUE    user defined
-    .cs_pin   = 33,  // YELLOW  hspi classic
-    .rst_pin  = -1,  // BROWN   cant find a pin
+    .clk_pin  = 39,  // ORANGE  hspi classic
+    .dc_pin   = 38,  // BLUE    user defined
+    .cs_pin   = 47,  // YELLOW  hspi classic
+    .rst_pin  = 21,  // BROWN   cant find a pin
     .blgt_pin = -1   // GREY    user defined  DAC1 brightness
 };
 

@@ -216,49 +216,55 @@ void ST7789_AVR::writeData16(uint16_t d16)
 }
 
 // ----------------------------------------------------------
-ST7789_AVR::ST7789_AVR(SPI_ENGINE who, int8_t dc, int8_t rst, int8_t cs, int8_t mosi, int8_t miso,  int8_t clk) : Adafruit_GFX(ST7789_TFTWIDTH, ST7789_TFTHEIGHT)
-{
-  csPin = cs;
-  dcPin = dc;
-  rstPin = rst;
-  mosiPin = mosi;
-  misoPin = miso;
-  clkPin = clk;
-  select = who;
-}
-
-// ----------------------------------------------------------
 ST7789_AVR::ST7789_AVR(SPI_ENGINE who) : Adafruit_GFX(ST7789_TFTWIDTH, ST7789_TFTHEIGHT)
 {
 
-  if (who == ENGINE_HSPI)
-  {
-	  csPin = WROVER_HSPI.cs_pin;
-	  dcPin = WROVER_HSPI.dc_pin;
-	  rstPin = WROVER_HSPI.rst_pin;
-	  mosiPin = WROVER_HSPI.mosi_pin;
-	  misoPin = WROVER_HSPI.miso_pin;
-	  clkPin = WROVER_HSPI.clk_pin;
-	  select = who;
-  }
-  else if (who == ENGINE_VSPI)
-  {
-	  csPin = WROVER_VSPI.cs_pin;
-	  dcPin = WROVER_VSPI.dc_pin;
-	  rstPin = WROVER_VSPI.rst_pin;
-	  mosiPin = WROVER_VSPI.mosi_pin;
-	  misoPin = WROVER_VSPI.miso_pin;
-	  clkPin = WROVER_VSPI.clk_pin;
-	  select = who;
-  }
+  #ifdef ARDUINO_ESP32_WROVER_KIT
+
+	  if (who == ENGINE_HSPI)
+	  {
+		  csPin   = WROVER_HSPI.cs_pin;
+		  dcPin   = WROVER_HSPI.dc_pin;
+		  rstPin  = WROVER_HSPI.rst_pin;
+		  mosiPin = WROVER_HSPI.mosi_pin;
+		  misoPin = WROVER_HSPI.miso_pin;
+		  clkPin  = WROVER_HSPI.clk_pin;
+	  }
+	  else if (who == ENGINE_VSPI)
+	  {
+		  csPin   = WROVER_VSPI.cs_pin;
+		  dcPin   = WROVER_VSPI.dc_pin;
+		  rstPin  = WROVER_VSPI.rst_pin;
+		  mosiPin = WROVER_VSPI.mosi_pin;
+		  misoPin = WROVER_VSPI.miso_pin;
+		  clkPin  = WROVER_VSPI.clk_pin;
+	  }
+
+  #elif defined ARDUINO_ESP32S3_DEV
+	  csPin   = WROOM_HSPI.cs_pin;		// there is only hspi defined
+	  dcPin   = WROOM_HSPI.dc_pin;
+	  rstPin  = WROOM_HSPI.rst_pin;
+	  mosiPin = WROOM_HSPI.mosi_pin;
+	  misoPin = WROOM_HSPI.miso_pin;
+	  clkPin  = WROOM_HSPI.clk_pin;
+  #else
+  	#error WHAT?
+  #endif
+  select = who;
+
 }
 // ----------------------------------------------------------
 void ST7789_AVR::init(uint16_t wd, uint16_t ht)
 {
 
   assert(select);
-  //SCLK, MISO, MOSI, SS
-  aSPI = new SPIClass(select == ENGINE_HSPI ? HSPI : VSPI);
+
+  #ifdef ARDUINO_ESP32_WROVER_KIT
+  	aSPI = new SPIClass(select == ENGINE_HSPI ? HSPI : VSPI);
+  #elif defined ARDUINO_ESP32S3_DEV
+  	aSPI = new SPIClass(HSPI );  // Hmmmm, no VSPI on S3?
+  #endif
+
   aSPI->begin(clkPin  , misoPin, mosiPin,  csPin);
   pinMode(aSPI->pinSS(), OUTPUT);  //HSPI SS
 
