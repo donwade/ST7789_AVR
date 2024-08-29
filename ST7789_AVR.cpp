@@ -536,7 +536,7 @@ void ST7789_AVR::viewPort(int16_t window_x, int16_t window_y,
 						  int16_t window_w, int16_t window_h,
 						  int16_t source_x, int16_t source_y,
 						  int16_t source_w, int16_t source_h,
-						  uint16_t *img16)
+						  uint16_t *img16) // image16 is ptr to RGB565 2bytes/Pixel
 {
   // all clipping should be on the application side
   if(window_w<=0 || window_h<=0) return;  // left for compatibility
@@ -545,19 +545,21 @@ void ST7789_AVR::viewPort(int16_t window_x, int16_t window_y,
   if(window_y+window_h-1>=_height) window_h=_height-window_y;
   setAddrWindow(window_x, window_y, window_x+window_w-1, window_y+window_h-1);
 
-  log_i("window_x = %d  window_y = %d", window_x, window_y);
-  log_i("window_w = %d  window_h = %d", window_w, window_h);
+  log_d("window_x = %d  window_y = %d", window_x, window_y);
+  log_d("window_w = %d  window_h = %d", window_w, window_h);
 
-  log_i("source_x = %d  source_y = %d", source_x, source_y);
-  log_i("source_w = %d  source_h = %d", source_w, source_h);
+  log_d("source_x = %d  source_y = %d", source_x, source_y);
+  log_d("source_w = %d  source_h = %d", source_w, source_h);
 
-  uint16_t *source_ptr = img16 + (source_x * source_y);
+  uint16_t *pRGB565 = img16 + (source_x * source_y);
 
   for (int down = source_y; down < min(window_h, source_h); down++)
   {
-  	copyMulti((uint8_t *)source_ptr, min(window_w, source_w));
-  	source_ptr += source_w; // go 'down' by going across the max.
-  	log_d("------ source_ptr = %p", source_ptr);
+  	// spi works in bytes, but rgb565 takes 2 bytes per pixel.
+  	// copyMulti will copy 2 bytes
+  	copyMulti((uint8_t *)pRGB565, min(window_w, source_w));
+  	pRGB565 += source_w; // go 'down' by going across the max.
+  	//log_d("------ pRGB565 = %p", pRGB565);
   }
   CS_IDLE;
   SPI_END;
@@ -571,7 +573,7 @@ void ST7789_AVR::drawImage(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t 
   if(w<=0 || h<=0) return;  // left for compatibility
   //if(x>=_width || y>=_height || w<=0 || h<=0) return;
   if(x+w-1>=_width)  w=_width -x;
-  if(y+h-1>=_height) h=_height-y;
+  if(y+h-1>=_height) h=_height -y;
   setAddrWindow(x, y, x+w-1, y+h-1);
 
   copyMulti((uint8_t *)img16, w*h); // assumed w*h will never be >64k
