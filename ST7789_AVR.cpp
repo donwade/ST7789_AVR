@@ -25,7 +25,7 @@ void dprintf( const char *format, ...) {
 
 //==================================================
 //https://github.com/espressif/arduino-esp32/blob/master/libraries/SPI/examples/SPI_Multiple_Buses/SPI_Multiple_Buses.ino
-static const int spiClk = 1000000;  // 1 MHz
+static const int spiClk = 2000000;  // 1 MHz
 
 
 
@@ -275,7 +275,7 @@ void ST7789_AVR::init(uint16_t wd, uint16_t ht)
 
   aSPI->begin(clkPin  , misoPin, mosiPin,  csPin);
   pinMode(aSPI->pinSS(), OUTPUT);  //HSPI SS
-
+  aSPI->setClockDivider (SPI_CLOCK_DIV2);
   commonST7789Init(NULL);
 
   if(wd==240 && ht==280) {
@@ -343,7 +343,7 @@ void ST7789_AVR::commonST7789Init(const uint8_t *cmdList)
   // on AVR ST7789 works correctly in MODE2 and MODE3 but for STM32 only MODE3 seems to be working
   //aSPI->begin();
 
-  spiSettings = SPISettings(16000000, MSBFIRST, SPI_MODE3);  // 8000000 gives max speed on AVR 16MHz
+  spiSettings = SPISettings(20000000, MSBFIRST, SPI_MODE3);  // 8000000 gives max speed on AVR 16MHz
 
   if(csPin>=0) { pinMode(csPin, OUTPUT); digitalWrite(csPin, LOW); }
 
@@ -540,7 +540,7 @@ void ST7789_AVR::viewPort(int16_t window_x, int16_t window_y,
 						  int16_t window_w, int16_t window_h,
 						  int16_t source_x, int16_t source_y,
 						  int16_t source_w, int16_t source_h,
-						  uint16_t *img16) // image16 is ptr to RGB565 2bytes/Pixel
+						  uint16_t *image) // image16 is ptr to RGB565 2bytes/Pixel
 {
   // all clipping should be on the application side
   if(window_w<=0 || window_h<=0) return;  // left for compatibility
@@ -555,13 +555,23 @@ void ST7789_AVR::viewPort(int16_t window_x, int16_t window_y,
   log_d("source_x = %d  source_y = %d", source_x, source_y);
   log_d("source_w = %d  source_h = %d", source_w, source_h);
 
-  uint16_t *pRGB565 = img16 + (source_x * source_y);
+  uint16_t *pRGB565 = image + (source_x * source_y);
 
-  for (int down = source_y; down < min(window_h, source_h); down++)
+  int hi = min(window_h, source_h);
+  int wide = min(window_w, source_w);
+
+  for (int down = source_y; down < hi; down++)
   {
   	// spi works in bytes, but rgb565 takes 2 bytes per pixel.
   	// copyMulti will copy 2 bytes
-  	copyMulti((uint8_t *)pRGB565, min(window_w, source_w));
+
+  	*(pRGB565 + wide/2) = 0x55AA; // crosshair
+  	if (down == hi/2)
+  	{
+  		memset(pRGB565, 0xAA55, wide * sizeof(*image));
+  	}
+
+  	copyMulti((uint8_t *)pRGB565, wide);
   	pRGB565 += source_w; // go 'down' by going across the max.
   	//log_d("------ pRGB565 = %p", pRGB565);
   }
