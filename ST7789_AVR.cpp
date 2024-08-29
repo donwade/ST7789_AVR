@@ -302,7 +302,7 @@ void ST7789_AVR::init(uint16_t wd, uint16_t ht)
   _height = _heightIni = ht;
 
   displayInit(init_240x240);
-  setRotation(2);
+  setRotation(six_oclock);
 
 }
 
@@ -361,39 +361,43 @@ void ST7789_AVR::commonST7789Init(const uint8_t *cmdList)
 }
 
 // ----------------------------------------------------------
-void ST7789_AVR::setRotation(uint8_t m)
+void ST7789_AVR::setRotation(oclock rotate)
 {
-  rotation = m & 3;
-  switch (rotation) {
-   case 0:
+  uint8_t m;
+  switch (rotate) {
+   case twelve_oclock:
      m=ST7789_MADCTL_MX | ST7789_MADCTL_MY | ST7789_MADCTL_RGB;
      xoffs = xstart;
      yoffs = ystart;
      _width = _widthIni;
      _height = _heightIni;
      break;
-   case 1:
+   case three_oclock:
      m=ST7789_MADCTL_MY | ST7789_MADCTL_MV | ST7789_MADCTL_RGB;
      xoffs = ystart;
      yoffs = xstart;
      _height = _widthIni;
      _width = _heightIni;
      break;
-  case 2:
+  case six_oclock:
      m=ST7789_MADCTL_RGB;
      xoffs = xend;
      yoffs = yend;
      _width = _widthIni;
      _height = _heightIni;
      break;
-   case 3:
+   case nine_oclock:
      m=ST7789_MADCTL_MX | ST7789_MADCTL_MV | ST7789_MADCTL_RGB;
      xoffs = yend;
      yoffs = xend;
      _height = _widthIni;
      _width = _heightIni;
      break;
+   default:
+   	 assert(m & 0);
+   	 break;
   }
+
   writeCmd(ST7789_MADCTL);
   writeData(m);
   //Serial.print("xoffs=");  Serial.print(xoffs);  Serial.print(" yoffs=");  Serial.println(yoffs);

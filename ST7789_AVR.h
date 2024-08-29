@@ -49,6 +49,16 @@ typedef enum SPI_ENGINE
     ENGINE_VSPI
 };
 
+typedef enum oclock
+{
+	twelve_oclock,  //portrait mode
+	three_oclock,   //landscape
+	six_oclock,     //portrait mode
+	nine_oclock     //landscape
+};
+
+
+
 class ST7789_AVR : public Adafruit_GFX {
 
  public:
@@ -71,7 +81,7 @@ class ST7789_AVR : public Adafruit_GFX {
   void drawImage(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t *img);
   void drawImageF(int16_t x, int16_t y, int16_t w, int16_t h, const uint16_t *img16);
   void drawImageF(int16_t x, int16_t y, const uint16_t *img16) { drawImageF(x,y,pgm_read_word(img16),pgm_read_word(img16+1),img16+3); }
-  void setRotation(uint8_t r);
+  void setRotation(oclock r);
   void invertDisplay(boolean mode);
   void partialDisplay(boolean mode);
   void sleepDisplay(boolean mode);
